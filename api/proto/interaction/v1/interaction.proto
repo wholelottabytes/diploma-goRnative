@@ -1,0 +1,66 @@
+syntax = "proto3";
+
+package interaction.v1;
+
+option go_package = "github.com/bns/api/proto/interaction/v1;interactionv1";
+
+import "google/protobuf/timestamp.proto";
+
+service InteractionService {
+  rpc CreateComment(CreateCommentRequest) returns (CreateCommentResponse);
+  rpc CreateRating(CreateRatingRequest) returns (CreateRatingResponse);
+  rpc GetCommentsByBeatID(GetCommentsByBeatIDRequest) returns (GetCommentsByBeatIDResponse);
+  rpc GetAverageRatingByBeatID(GetAverageRatingByBeatIDRequest) returns (GetAverageRatingByBeatIDResponse);
+}
+
+message Comment {
+  string id = 1;
+  string beat_id = 2;
+  string user_id = 3;
+  string text = 4;
+  google.protobuf.Timestamp created_at = 5;
+}
+
+message Rating {
+  string id = 1;
+  string beat_id = 2;
+  string user_id = 3;
+  int32 value = 4;
+  google.protobuf.Timestamp created_at = 5;
+}
+
+message CreateCommentRequest {
+  string beat_id = 1;
+  string user_id = 2;
+  string text = 3;
+}
+
+message CreateCommentResponse {
+  Comment comment = 1;
+}
+
+message CreateRatingRequest {
+  string beat_id = 1;
+  string user_id = 2;
+  int32 value = 3;
+}
+
+message CreateRatingResponse {
+  Rating rating = 1;
+}
+
+message GetCommentsByBeatIDRequest {
+  string beat_id = 1;
+}
+
+message GetCommentsByBeatIDResponse {
+  repeated Comment comments = 1;
+}
+
+message GetAverageRatingByBeatIDRequest {
+  string beat_id = 1;
+}
+
+message GetAverageRatingByBeatIDResponse {
+  double average_rating = 1;
+}

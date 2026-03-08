@@ -1,0 +1,399 @@
+# Microservices for Music Beat Marketplace
+services:
+  # ─── Monitoring Setup (ILM Policy) ────────────────────────────────
+  setup_monitoring:
+    image: curlimages/curl:latest
+    container_name: setup_monitoring
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    volumes:
+      - ./setup-elastic.sh:/scripts/setup-elastic.sh:ro
+    entrypoint: ["/bin/sh", "/scripts/setup-elastic.sh"]
+    networks:
+      - backend
+
+  filebeat:
+    build:
+      context: ./filebeat
+    container_name: filebeat
+    user: root # Needed to read Docker container logs
+    volumes:
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    networks:
+      - backend
+
+  # ─── Databases ───────────────────────────────────────────────────
+  postgres:
+    image: postgres:15-alpine
+    container_name: postgres_db
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: wallet_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - backend
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  mongo:
+    image: mongo:6.0
+    container_name: mongo_db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: user
+      MONGO_INITDB_ROOT_PASSWORD: password
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - backend
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: redis_cache
+    ports:
+      - "6379:6379"
+    networks:
+      - backend
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ─── Kafka ───────────────────────────────────────────────────────
+#  zookeeper:
+#    image: confluentinc/cp-zookeeper:7.3.0
+#    container_name: zookeeper
+#    environment:
+#      ZOOKEEPER_CLIENT_PORT: 2181
+#      ZOOKEEPER_TICK_TIME: 2000
+#      _JAVA_OPTIONS: "-Djdk.internal.platform.cgroup.memory.type=v1"
+#    ports:
+#      - "2181:2181"
+#    networks:
+#      - backend
+#    healthcheck:
+#      test: ["CMD", "/usr/bin/cub", "zk", "status", "-z", "localhost:2181"]
+#      interval: 10s
+#      timeout: 5s
+#      retries: 5
+#
+#  kafka:
+#    image: confluentinc/cp-kafka:7.3.0
+#    container_name: kafka
+#    depends_on:
+#      zookeeper:
+#        condition: service_healthy
+#    ports:
+#      - "9092:9092"
+#      - "29092:29092"
+#    environment:
+#      KAFKA_BROKER_ID: 1
+#      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
+#      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+#      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
+#      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+#      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+#      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+#    networks:
+#      - backend
+#
+#  kafka-ui:
+#    image: provectuslabs/kafka-ui:latest
+#    container_name: kafka-ui
+#    ports:
+#      - "8081:8080"
+#    environment:
+#      - KAFKA_CLUSTERS_0_NAME=local
+#      - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka:9092
+#      - KAFKA_CLUSTERS_0_ZOOKEEPER=zookeeper:2181
+#    depends_on:
+#      - kafka
+#    networks:
+#      - backend
+
+  # ─── Storage ─────────────────────────────────────────────────────
+  minio:
+    image: minio/minio:RELEASE.2023-03-20T20-16-18Z
+    container_name: minio_storage
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    ports:
+      - "9010:9000"   # API (changed from 9000 to avoid ClickHouse conflict)
+      - "9011:9001"   # Console
+    command: server /data --console-address ":9001"
+    volumes:
+      - minio_data:/data
+    networks:
+      - backend
+
+  # ─── Elasticsearch + Kibana ───────────────────────────────────────
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.6.2
+    container_name: elasticsearch
+    environment:
+      - "discovery.type=single-node"
+      - "xpack.security.enabled=false"
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ports:
+      - "9200:9200"
+    volumes:
+      - es_data:/usr/share/elasticsearch/data
+    networks:
+      - backend
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:9200/_cluster/health || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.6.2
+    container_name: kibana
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    ports:
+      - "5601:5601"
+    environment:
+      ELASTICSEARCH_HOSTS: 'http://elasticsearch:9200'
+    networks:
+      - backend
+
+  # ─── ClickHouse ──────────────────────────────────────────────────
+  clickhouse:
+    image: clickhouse/clickhouse-server:23.3-alpine
+    container_name: clickhouse_db
+    environment:
+      CLICKHOUSE_DB: analytics
+      CLICKHOUSE_USER: user
+      CLICKHOUSE_PASSWORD: password
+    ports:
+      - "8123:8123"   # HTTP interface
+      - "9009:9000"   # Native interface (remapped to avoid MinIO conflict)
+    volumes:
+      - clickhouse_data:/var/lib/clickhouse
+    networks:
+      - backend
+    healthcheck:
+      test: ["CMD-SHELL", "clickhouse-client --query 'SELECT 1'"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ─── Monitoring ──────────────────────────────────────────────────
+  prometheus:
+    image: prom/prometheus:v2.43.0
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    command: --config.file=/etc/prometheus/prometheus.yml
+    networks:
+      - backend
+
+  grafana:
+    image: grafana/grafana:9.4.3
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning
+    networks:
+      - backend
+
+  # ─── API Gateway ─────────────────────────────────────────────────
+  nginx:
+    image: nginx:1.25-alpine
+    container_name: api_gateway
+    ports:
+      - "8000:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - auth-service
+      - beat-service
+      - user-service
+      - interaction-service
+      - order-service
+      - wallet-service
+    networks:
+      - backend
+    restart: unless-stopped
+
+  # ─── Microservices ───────────────────────────────────────────────
+  auth-service:
+    build:
+      context: .
+      dockerfile: auth-service/Dockerfile
+    container_name: auth_service
+    environment:
+      - REDIS_ADDR=redis_cache:6379
+      - JWT_SECRET=super-secret-jwt-key-beatmarket
+      - USER_SERVICE_ADDR=user_service:9090
+      - HTTP_PORT=:8080
+      - GRPC_PORT=:9090
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - backend
+    restart: unless-stopped
+
+  user-service:
+    build:
+      context: .
+      dockerfile: user-service/Dockerfile
+    container_name: user_service
+    environment:
+      - MONGO_URI=mongodb://user:password@mongo_db:27017/?authSource=admin
+      - MONGO_DB_NAME=beatmarket
+      - JWT_SECRET=super-secret-jwt-key-beatmarket
+      - KAFKA_BROKERS=kafka:9092
+      - HTTP_PORT=:8080
+      - GRPC_PORT=:9090
+    depends_on:
+      mongo:
+        condition: service_healthy
+    networks:
+      - backend
+    restart: unless-stopped
+
+  beat-service:
+    build:
+      context: .
+      dockerfile: beat-service/Dockerfile
+    container_name: beat_service
+    environment:
+      - ELASTICSEARCH_ADDR=http://elasticsearch:9200
+      - MINIO_ENDPOINT=minio_storage:9000
+      - MINIO_ACCESS_KEY_ID=minioadmin
+      - MINIO_SECRET_ACCESS_KEY=minioadmin
+      - MINIO_USE_SSL=false
+      - JWT_SECRET=super-secret-jwt-key-beatmarket
+      - KAFKA_BROKERS=kafka:9092
+      - HTTP_PORT=:8080
+      - GRPC_PORT=:9090
+      - USER_SERVICE_ADDR=user_service:9090
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    networks:
+      - backend
+    restart: unless-stopped
+
+  interaction-service:
+    build:
+      context: .
+      dockerfile: interaction-service/Dockerfile
+    container_name: interaction_service
+    environment:
+      - MONGO_URI=mongodb://user:password@mongo_db:27017/?authSource=admin
+      - MONGO_DB_NAME=beatmarket
+      - JWT_SECRET=super-secret-jwt-key-beatmarket
+      - KAFKA_BROKERS=kafka:9092
+      - HTTP_PORT=:8080
+      - GRPC_PORT=:9090
+    depends_on:
+      mongo:
+        condition: service_healthy
+    networks:
+      - backend
+    restart: unless-stopped
+
+  order-service:
+    build:
+      context: .
+      dockerfile: order-service/Dockerfile
+    container_name: order_service
+    environment:
+      - MONGO_URI=mongodb://user:password@mongo_db:27017/?authSource=admin
+      - MONGO_DATABASE=beatmarket
+      - WALLET_SERVICE_ADDR=wallet_service:9090
+      - BEAT_SERVICE_ADDR=beat_service:9090
+      - JWT_SECRET=super-secret-jwt-key-beatmarket
+      - KAFKA_BROKERS=kafka:9092
+      - HTTP_PORT=:8080
+      - GRPC_PORT=:9090
+    depends_on:
+      mongo:
+        condition: service_healthy
+    networks:
+      - backend
+    restart: unless-stopped
+
+  wallet-service:
+    build:
+      context: .
+      dockerfile: wallet-service/Dockerfile
+    container_name: wallet_service
+    environment:
+      - PG_HOST=postgres_db
+      - PG_PORT=5432
+      - PG_USER=user
+      - PG_PASSWORD=password
+      - PG_DBNAME=wallet_db
+      - JWT_SECRET=super-secret-jwt-key-beatmarket
+      - HTTP_PORT=:8080
+      - GRPC_PORT=:9090
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - backend
+    restart: unless-stopped
+
+  analytics-service:
+    build:
+      context: .
+      dockerfile: analytics-service/Dockerfile
+    container_name: analytics_service
+    environment:
+      - CLICKHOUSE_ADDRS=clickhouse_db:9000
+      - CLICKHOUSE_DATABASE=analytics
+      - CLICKHOUSE_USER=user
+      - CLICKHOUSE_PASSWORD=password
+      - KAFKA_BROKERS=kafka:9092
+      - HTTP_PORT=:8080
+    depends_on:
+      clickhouse:
+        condition: service_healthy
+    networks:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  mongo_data:
+  minio_data:
+  es_data:
+  clickhouse_data:
+  grafana_data:
+
+networks:
+  backend:
+    driver: bridge

@@ -1,0 +1,25 @@
+filebeat.inputs:
+- type: container
+  paths:
+    - /var/lib/docker/containers/*/*.log
+  processors:
+    - add_docker_metadata: ~
+    - decode_json_fields:
+        fields: ["message"]
+        target: "json"
+        overwrite_keys: true
+        add_error_key: true
+
+output.elasticsearch:
+  hosts: ["elasticsearch:9200"]
+  index: "filebeat-%{[agent.version]}-%{+yyyy.MM.dd}"
+
+setup.template.name: "filebeat"
+setup.template.pattern: "filebeat-*"
+setup.template.enabled: true
+
+# ILM settings
+setup.ilm.enabled: auto
+setup.ilm.rollover_alias: "filebeat"
+setup.ilm.pattern: "{now/d}-000001"
+setup.ilm.policy_name: "log-cleanup-policy"
