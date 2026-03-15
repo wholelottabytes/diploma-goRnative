@@ -4,8 +4,8 @@
       {
         "builtIn": 1,
         "datasource": {
-          "type": "grafana",
-          "uid": "-- Graphics --"
+          "type": "prometheus",
+          "uid": "prometheus"
         },
         "enable": true,
         "hide": true,

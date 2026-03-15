@@ -6,17 +6,18 @@ import (
 )
 
 // NewHTTPMetrics registers and returns Prometheus HTTP metrics for a service.
+// Each metric will include a 'service' label for centralized dashboarding.
 func NewHTTPMetrics(serviceName string) (requestsTotal *prometheus.CounterVec, requestDuration *prometheus.HistogramVec) {
 	requestsTotal = promauto.NewCounterVec(prometheus.CounterOpts{
-		Namespace: serviceName,
-		Name:      "http_requests_total",
-		Help:      "Total number of HTTP requests",
+		Name: "http_requests_total",
+		Help: "Total number of HTTP requests",
+		ConstLabels: prometheus.Labels{"service": serviceName},
 	}, []string{"method", "path", "status"})
 
 	requestDuration = promauto.NewHistogramVec(prometheus.HistogramOpts{
-		Namespace: serviceName,
-		Name:      "http_request_duration_seconds",
-		Help:      "Duration of HTTP requests in seconds",
+		Name: "http_request_duration_seconds",
+		Help: "Duration of HTTP requests in seconds",
+		ConstLabels: prometheus.Labels{"service": serviceName},
 		Buckets:   prometheus.DefBuckets,
 	}, []string{"method", "path"})
 	return
@@ -25,8 +26,8 @@ func NewHTTPMetrics(serviceName string) (requestsTotal *prometheus.CounterVec, r
 // NewKafkaMetrics registers Kafka publish metrics.
 func NewKafkaMetrics(serviceName string) *prometheus.CounterVec {
 	return promauto.NewCounterVec(prometheus.CounterOpts{
-		Namespace: serviceName,
-		Name:      "kafka_messages_published_total",
-		Help:      "Total number of Kafka messages published",
+		Name: "kafka_messages_published_total",
+		Help: "Total number of Kafka messages published",
+		ConstLabels: prometheus.Labels{"service": serviceName},
 	}, []string{"topic"})
 }

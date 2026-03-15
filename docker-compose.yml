@@ -9,7 +9,7 @@ services:
         condition: service_healthy
     volumes:
       - ./setup-elastic.sh:/scripts/setup-elastic.sh:ro
-    entrypoint: ["/bin/sh", "/scripts/setup-elastic.sh"]
+    entrypoint: [ "/bin/sh", "/scripts/setup-elastic.sh" ]
     networks:
       - backend
 
@@ -42,7 +42,7 @@ services:
     networks:
       - backend
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U user"]
+      test: [ "CMD-SHELL", "pg_isready -U user" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -60,7 +60,7 @@ services:
     networks:
       - backend
     healthcheck:
-      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      test: [ "CMD", "mongosh", "--eval", "db.adminCommand('ping')" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -73,19 +73,21 @@ services:
     networks:
       - backend
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: [ "CMD", "redis-cli", "ping" ]
       interval: 10s
       timeout: 5s
       retries: 5
 
   # ─── Kafka ───────────────────────────────────────────────────────
   zookeeper:
-    image: bitnami/zookeeper:latest
+    image: zookeeper:3.8
     container_name: zookeeper
-    environment:
-      - ALLOW_ANONYMOUS_LOGIN=yes
+    restart: unless-stopped
     ports:
       - "2181:2181"
+    environment:
+      ZOO_MY_ID: 1
+      ZOO_SERVERS: server.1=zookeeper:2888:3888;2181
     networks:
       - backend
 
@@ -108,7 +110,7 @@ services:
     networks:
       - backend
     healthcheck:
-      test: ["CMD-SHELL", "kafka-broker-api-versions --bootstrap-server localhost:9092"]
+      test: [ "CMD-SHELL", "kafka-broker-api-versions --bootstrap-server localhost:9092" ]
       interval: 15s
       timeout: 10s
       retries: 10
@@ -135,8 +137,8 @@ services:
       MINIO_ROOT_USER: minioadmin
       MINIO_ROOT_PASSWORD: minioadmin
     ports:
-      - "9010:9000"   # API (changed from 9000 to avoid ClickHouse conflict)
-      - "9011:9001"   # Console
+      - "9010:9000" # API (changed from 9000 to avoid ClickHouse conflict)
+      - "9011:9001" # Console
     command: server /data --console-address ":9001"
     volumes:
       - minio_data:/data
@@ -158,7 +160,7 @@ services:
     networks:
       - backend
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:9200/_cluster/health || exit 1"]
+      test: [ "CMD-SHELL", "curl -f http://localhost:9200/_cluster/health || exit 1" ]
       interval: 15s
       timeout: 10s
       retries: 10
@@ -185,14 +187,14 @@ services:
       CLICKHOUSE_USER: user
       CLICKHOUSE_PASSWORD: password
     ports:
-      - "8123:8123"   # HTTP interface
-      - "9009:9000"   # Native interface (remapped to avoid MinIO conflict)
+      - "8123:8123" # HTTP interface
+      - "9009:9000" # Native interface (remapped to avoid MinIO conflict)
     volumes:
       - clickhouse_data:/var/lib/clickhouse
     networks:
       - backend
     healthcheck:
-      test: ["CMD-SHELL", "clickhouse-client --query 'SELECT 1'"]
+      test: [ "CMD-SHELL", "clickhouse-client --query 'SELECT 1'" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -217,6 +219,7 @@ services:
     environment:
       - GF_SECURITY_ADMIN_USER=admin
       - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_INSTALL_PLUGINS=grafana-clickhouse-datasource
     volumes:
       - grafana_data:/var/lib/grafana
       - ./grafana/provisioning:/etc/grafana/provisioning
@@ -390,6 +393,7 @@ volumes:
   es_data:
   clickhouse_data:
   grafana_data:
+
 
 networks:
   backend:
