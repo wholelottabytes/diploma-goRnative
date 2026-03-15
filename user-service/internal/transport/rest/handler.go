@@ -29,12 +29,12 @@ func NewHandler(services *service.Services) *Handler {
 func (h *Handler) RegisterRoutes(router *gin.Engine) {
 	router.Use(middleware.Metrics(h.requestsTotal, h.requestDuration))
 
+	apiV1 := router.Group("/api/v1")
+
 	// Health check
-	router.GET("/health", func(c *gin.Context) {
+	apiV1.GET("/health", func(c *gin.Context) {
 		c.Status(http.StatusOK)
 	})
-
-	apiV1 := router.Group("/api/v1")
 
 	userHandler := user.NewHandler(h.services.User, h.services.Config.App.JWTSecret)
 	userHandler.RegisterRoutes(apiV1)

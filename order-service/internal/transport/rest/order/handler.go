@@ -22,6 +22,9 @@ func NewHandler(orderService *orderservice.OrderService, jwtSecret string) *Hand
 
 func (h *Handler) RegisterRoutes(router *gin.RouterGroup) {
 	orders := router.Group("/orders")
+	
+	orders.GET("/health", func(c *gin.Context) { c.Status(http.StatusOK) })
+
 	orders.Use(middleware.Auth(h.jwtSecret))
 	{
 		orders.POST("/buy", h.buyBeat)

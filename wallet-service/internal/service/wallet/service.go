@@ -65,6 +65,17 @@ func (s *WalletService) Credit(ctx context.Context, userID string, amount float6
 	if amount <= 0 {
 		return fmt.Errorf("amount must be positive")
 	}
+	w, err := s.repo.GetByUserID(ctx, userID)
+	if err != nil {
+		return err
+	}
+	if w == nil {
+		// Auto-create wallet if not exists
+		_, err = s.repo.Create(ctx, &models.Wallet{UserID: userID, Balance: 0})
+		if err != nil {
+			return err
+		}
+	}
 	return s.repo.UpdateBalance(ctx, userID, amount, "credit", ref)
 }
 

@@ -66,8 +66,14 @@ func (s *UserService) Register(ctx context.Context, input RegisterUserInput) (*m
 		return nil, fmt.Errorf("validation failed: %w", err)
 	}
 
-	if input.Role != "user" && input.Role != "admin" {
+	// Validate and build roles — every user gets the base "user" role
+	validRoles := map[string]bool{"user": true, "buyer": true, "seller": true, "admin": true}
+	if input.Role != "" && !validRoles[input.Role] {
 		return nil, apperrors.ErrInvalidRole
+	}
+	roles := []string{"user"}
+	if input.Role != "" && input.Role != "user" {
+		roles = append(roles, input.Role)
 	}
 
 	existing, err := s.repo.FindByEmail(ctx, input.Email)
@@ -88,7 +94,7 @@ func (s *UserService) Register(ctx context.Context, input RegisterUserInput) (*m
 		Email:        input.Email,
 		Phone:        input.Phone,
 		PasswordHash: passwordHash,
-		Roles:        []string{input.Role},
+		Roles:        roles,
 		Rating:       5.0,
 	}
 

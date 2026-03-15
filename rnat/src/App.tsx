@@ -15,6 +15,7 @@ import LikedBeatsScreen from './screens/LikedBeatsScreen';
 import AllBeatsScreen from './screens/AllBeatsScreen';
 import { BottomTabNavigationOptions } from '@react-navigation/bottom-tabs';
 import UserProfileScreen from './screens/UserProfileScreen';
+import TopUpScreen from './screens/TopUpScreen';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { RouteProp, ParamListBase } from '@react-navigation/native';
 import { Colors } from './theme/theme';
@@ -115,6 +116,7 @@ const AppContent = () => {
           <Stack.Screen name="EditBeat" component={EditBeatScreen as React.ComponentType<any>} />
           <Stack.Screen name="AddBeat" component={AddBeatScreen as React.ComponentType<any>} />
           <Stack.Screen name="UserProfile" component={UserProfileScreen as React.ComponentType<any>} />
+          <Stack.Screen name="TopUp" component={TopUpScreen as React.ComponentType<any>} />
         </Stack.Navigator>
       </NavigationContainer>
     </GestureHandlerRootView>

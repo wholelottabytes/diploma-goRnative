@@ -55,7 +55,7 @@ func main() {
 		os.Exit(1)
 	}
 	
-	authSvc := authservice.NewAuthService(authRepo, userClient, "super-secret", time.Hour*24)
+	authSvc := authservice.NewAuthService(authRepo, userClient, cfg.App.JWTSecret, time.Hour*24)
 	services := service.New(authSvc)
 	restHandler := rest.NewHandler(services)
 	mainServer := server.New(cfg, services, restHandler)

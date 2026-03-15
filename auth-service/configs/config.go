@@ -13,8 +13,9 @@ type Config struct {
 }
 
 type AppConfig struct {
-	Name    string
-	Version string
+	Name      string
+	Version   string
+	JWTSecret string
 }
 
 type HTTPConfig struct {
@@ -48,11 +49,12 @@ func NewConfig() (*Config, error) {
 
 	return &Config{
 		App: AppConfig{
-			Name:    getEnv("APP_NAME", "auth-service"),
-			Version: getEnv("APP_VERSION", "1.0.0"),
+			Name:      getEnv("APP_NAME", "auth-service"),
+			Version:   getEnv("APP_VERSION", "1.0.0"),
+			JWTSecret: getEnv("JWT_SECRET", "super-secret-jwt-key-beatmarket"),
 		},
 		HTTP: HTTPConfig{
-			Port:            getEnv("HTTP_PORT", ":8081"),
+			Port:            getEnv("HTTP_PORT", ":8080"),
 			ReadTimeout:     readTimeout,
 			WriteTimeout:    writeTimeout,
 			ShutdownTimeout: shutdownTimeout,

@@ -73,7 +73,7 @@ func NewConfig() (*Config, error) {
 			JWTSecret: getEnv("JWT_SECRET", "super-secret-jwt-key-beatmarket"),
 		},
 		HTTP: HTTPConfig{
-			Port:            getEnv("HTTP_PORT", ":8082"),
+			Port:            getEnv("HTTP_PORT", ":8080"),
 			ReadTimeout:     readTimeout,
 			WriteTimeout:    writeTimeout,
 			ShutdownTimeout: shutdownTimeout,

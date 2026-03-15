@@ -23,6 +23,9 @@ func NewHandler(interactionService *interactionservice.InteractionService, jwtSe
 
 func (h *Handler) RegisterRoutes(router *gin.RouterGroup) {
 	interactions := router.Group("/interactions")
+
+	interactions.GET("/health", func(c *gin.Context) { c.Status(http.StatusOK) })
+
 	{
 		// Ratings
 		interactions.GET("/beats/:id/rating", h.getRating)

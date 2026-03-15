@@ -28,13 +28,13 @@ func NewHandler(services *service.Services) *Handler {
 func (h *Handler) RegisterRoutes(router *gin.Engine) {
 	router.Use(middleware.Metrics(h.requestsTotal, h.requestDuration))
 
-	// Health check
-	router.GET("/health", func(c *gin.Context) {
-		c.Status(http.StatusOK)
-	})
-
 	analytics := router.Group("/api/v1/analytics")
 	{
+		// Health check
+		analytics.GET("/health", func(c *gin.Context) {
+			c.Status(http.StatusOK)
+		})
+		
 		analytics.GET("/beats/:id/stats", h.getBeatStats)
 	}
 }

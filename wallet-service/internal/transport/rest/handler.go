@@ -1,8 +1,6 @@
 package rest
 
 import (
-	"net/http"
-
 	"github.com/bns/pkg/metrics"
 	"github.com/bns/pkg/middleware"
 	"github.com/bns/wallet-service/internal/service"
@@ -28,11 +26,6 @@ func NewHandler(services *service.Services) *Handler {
 
 func (h *Handler) RegisterRoutes(router *gin.Engine) {
 	router.Use(middleware.Metrics(h.requestsTotal, h.requestDuration))
-
-	// Health check
-	router.GET("/health", func(c *gin.Context) {
-		c.Status(http.StatusOK)
-	})
 
 	apiV1 := router.Group("/api/v1")
 

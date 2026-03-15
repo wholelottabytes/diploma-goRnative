@@ -44,11 +44,8 @@ export default function ProfileScreen({ navigation }: any) {
 
   const loadProfile = async () => {
     try {
-      const userId = await AsyncStorage.getItem('userId');
-      if (!userId) throw new Error('No userId');
-
       const [profileRes, walletRes] = await Promise.all([
-        userApi.getProfile(userId),
+        userApi.getProfile(),
         walletApi.getBalance()
       ]);
 
@@ -151,8 +148,8 @@ export default function ProfileScreen({ navigation }: any) {
 
         {/* Menu */}
         <View style={styles.menu}>
-          {[
-            { icon: CreditCard, label: 'Top Up Wallet', onPress: () => Alert.alert('Coming Soon', 'Payment gateway integration') },
+                    {[
+            { icon: CreditCard, label: 'Top Up Wallet', onPress: () => navigation.navigate('TopUp') },
             { icon: Music, label: 'My Beats', onPress: () => navigation.navigate('Add') },
             { icon: Heart, label: 'Liked Beats', onPress: () => navigation.navigate('Rated') },
             { icon: Star, label: 'Beat Market', onPress: () => navigation.navigate('Explore') },

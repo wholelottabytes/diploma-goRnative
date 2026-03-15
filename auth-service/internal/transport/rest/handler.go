@@ -28,6 +28,11 @@ func (h *Handler) RegisterRoutes(router *gin.Engine) {
 	router.Use(middleware.Metrics(h.requestsTotal, h.requestDuration))
 	apiV1 := router.Group("/api/v1")
 
+	// Health check
+	apiV1.GET("/health", func(c *gin.Context) {
+		c.Status(200)
+	})
+
 	authHandler := auth.NewHandler(h.services.Auth)
 	authHandler.RegisterRoutes(apiV1)
 }

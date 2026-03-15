@@ -15,14 +15,14 @@ export interface RegisterPayload {
 
 export const authApi = {
   login: (data: LoginPayload) => client.post('/auth/login', data),
-  register: (data: RegisterPayload) => client.post('/auth/register', data),
   refresh: () => client.post('/auth/refresh'),
 };
 
 export const userApi = {
-  getProfile: (id: string) => client.get(`/users/${id}`),
-  updateProfile: (id: string, data: object) => client.put(`/users/${id}`, data),
-  changePassword: (data: object) => client.patch('/users/me/password', data),
+  register: (data: RegisterPayload) => client.post('/users/register', data),
+  getProfile: () => client.get('/users/profile'),
+  updateProfile: (data: object) => client.put('/users/profile', data),
+  changePassword: (data: object) => client.patch('/users/profile/password', data),
   getUserById: (id: string) => client.get(`/users/${id}`),
 };
 
@@ -64,7 +64,7 @@ export const orderApi = {
 };
 
 export const walletApi = {
-  getBalance: () => client.get('/wallets/balance'),
-  getTransactions: () => client.get('/wallets/transactions'),
-  topUp: (amount: number) => client.post('/wallets/topup', { amount }),
+  getBalance: () => client.get('/wallet/balance'),
+  getTransactions: () => client.get('/wallet/transactions'),
+  topUp: (amount: number) => client.post('/wallet/topup', { amount }),
 };

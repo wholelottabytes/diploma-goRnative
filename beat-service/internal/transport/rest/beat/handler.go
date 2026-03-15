@@ -30,6 +30,7 @@ func (h *Handler) RegisterRoutes(router *gin.RouterGroup) {
 		beats.GET("/recent", h.getRecentBeats)
 		beats.GET("/popular", h.getPopularBeats)
 		beats.POST("/batch", h.getByIDs)
+		beats.GET("/health", func(c *gin.Context) { c.Status(http.StatusOK) })
 		beats.GET("/:id", h.getBeat)
 
 		// Auth required
