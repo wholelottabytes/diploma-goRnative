@@ -20,6 +20,7 @@
     "metro-react-native-babel-preset": "^0.77.0",
     "react": "19.0.0",
     "react-native": "0.78.0",
+    "react-native-base64": "^0.2.2",
     "react-native-dotenv": "^3.4.11",
     "react-native-feather": "^1.1.2",
     "react-native-fs": "^2.20.0",

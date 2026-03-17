@@ -34,7 +34,7 @@ export default function RegisterScreen({ navigation }: any) {
     }
     setLoading(true);
     try {
-      const res = await authApi.register({
+      const res = await userApi.register({
         name,
         email: email.toLowerCase(),
         phone,
@@ -55,6 +55,7 @@ export default function RegisterScreen({ navigation }: any) {
       
       authContext?.login(token, userObj);
     } catch (e: any) {
+      console.error(e);
       Alert.alert('Registration Failed', e?.response?.data?.message || 'Something went wrong');
     } finally {
       setLoading(false);

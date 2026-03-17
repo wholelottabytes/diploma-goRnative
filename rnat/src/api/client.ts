@@ -1,9 +1,8 @@
 import axios from 'axios';
-import { API_URL } from '@env';
+import config from '../screens/config';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-// Define the API URL from environment variables, fallback to local android emulator loopback
-const BASE_URL = API_URL || 'http://10.0.2.2:8000/api';
+const BASE_URL = config.API_URL;
 
 const client = axios.create({
   baseURL: BASE_URL,

@@ -80,7 +80,10 @@ const MainTabs = () => (
 
 const AppContent = () => {
   const authContext = React.useContext(AuthContext);
-  if (!authContext) throw new Error('AuthContext not provided');
+  if (!authContext) {
+    // Return null or a loading indicator while the context is being provided.
+    return null;
+  }
   const { isAuthenticated } = authContext;
 
   return (

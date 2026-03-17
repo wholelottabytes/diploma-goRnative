@@ -1,5 +1,6 @@
 import React, { createContext, useState, useEffect, ReactNode } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import base64 from 'react-native-base64';
 
 // Определяем типы для контекста
 interface User {
@@ -10,9 +11,9 @@ interface User {
 function parseJwt(token: string) {
     try {
         const base64Url = token.split('.')[1];
-        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const base64Decoded = base64Url.replace(/-/g, '+').replace(/_/g, '/');
         const jsonPayload = decodeURIComponent(
-            atob(base64)
+            base64.decode(base64Decoded)
                 .split('')
                 .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
                 .join('')
