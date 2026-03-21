@@ -18,6 +18,7 @@ import (
 	"github.com/bns/user-service/internal/server"
 	"github.com/bns/user-service/internal/service"
 	userservice "github.com/bns/user-service/internal/service/user"
+	"github.com/bns/user-service/internal/seeder"
 	transport_kafka "github.com/bns/user-service/internal/transport/kafka"
 	"github.com/bns/user-service/internal/transport/rest"
 	"github.com/golang-migrate/migrate/v4"
@@ -91,8 +92,11 @@ func main() {
 	walletMock := wallet.NewMockClient()
 
 	hasher := hash.NewBcryptHasher()
-	userService := userservice.NewUserService(repoAggregator.UserRepository, hasher, kafkaProducer, walletMock)
+	userService := userservice.NewUserService(repoAggregator.UserRepository, hasher, kafkaProducer, walletMock, cfg.App.JWTSecret)
 	serviceAggregator := service.New(userService, cfg)
+
+	// Call the seeder after services are initialized
+	seeder.SeedData(userService, repoAggregator.UserRepository)
 
 	restHandler := rest.NewHandler(serviceAggregator)
 	ratingConsumer := transport_kafka.NewRatingUpdateConsumer(userService, ratingConsumerGroup, cfg.Kafka.RatingTopic)

@@ -136,6 +136,10 @@ func (r *BeatRepository) Search(ctx context.Context, query string) ([]*models.Be
 	return beats, nil
 }
 
+func (r *BeatRepository) FindAll(ctx context.Context) ([]*models.Beat, error) {
+	return r.Search(ctx, "")
+}
+
 func (r *BeatRepository) Update(ctx context.Context, id string, beat *models.Beat) error {
 	data, err := json.Marshal(map[string]interface{}{"doc": beat})
 	if err != nil {

@@ -15,7 +15,7 @@ import (
 )
 
 type UserService interface {
-	Register(ctx context.Context, input userservice.RegisterUserInput) (*models.User, error)
+	Register(ctx context.Context, input userservice.RegisterUserInput) (*models.User, string, error)
 	GetProfile(ctx context.Context, userID string) (*models.User, error)
 	UpdateProfile(ctx context.Context, userID, name, phone, email string) (*models.User, error)
 	DeleteProfile(ctx context.Context, userID string) error
@@ -101,8 +101,13 @@ func (h *Handler) register(c *gin.Context) {
 		Role:     req.Role,
 	}
 
-	user, err := h.userService.Register(c.Request.Context(), input)
+	user, token, err := h.userService.Register(c.Request.Context(), input)
 	if err != nil {
+		var validationErr *apperrors.ValidationError
+		if errors.As(err, &validationErr) {
+			c.JSON(http.StatusBadRequest, gin.H{"error": validationErr.Error()})
+			return
+		}
 		if errors.Is(err, apperrors.ErrUserExists) {
 			c.JSON(http.StatusConflict, gin.H{"error": err.Error()})
 			return
@@ -115,7 +120,7 @@ func (h *Handler) register(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, toUserResponse(user))
+	c.JSON(http.StatusCreated, toRegisterResponse(user, token))
 }
 
 func (h *Handler) getProfile(c *gin.Context) {
@@ -261,6 +266,11 @@ type userResponse struct {
 	CreatedAt time.Time `json:"createdAt"`
 }
 
+type registerResponse struct {
+	userResponse
+	Token string `json:"token"`
+}
+
 func toUserResponse(user *models.User) userResponse {
 	return userResponse{
 		ID:        user.ID,
@@ -270,6 +280,13 @@ func toUserResponse(user *models.User) userResponse {
 		Roles:     user.Roles,
 		Rating:    user.Rating,
 		CreatedAt: user.CreatedAt,
+	}
+}
+
+func toRegisterResponse(user *models.User, token string) registerResponse {
+	return registerResponse{
+		userResponse: toUserResponse(user),
+		Token:        token,
 	}
 }
 

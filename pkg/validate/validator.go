@@ -1,43 +1,47 @@
 package validate
 
 import (
-	"fmt"
 	"net/mail"
 	"unicode"
+
+	"github.com/bns/pkg/apperrors"
 )
 
 func ValidateCredentials(email, phone, password string) error {
 	if _, err := mail.ParseAddress(email); err != nil {
-		return fmt.Errorf("invalid email: %w", err)
+		return apperrors.NewValidationError("invalid email format")
 	}
 	if len(phone) < 10 {
-		return fmt.Errorf("invalid phone number")
+		return apperrors.NewValidationError("phone number must be at least 10 digits")
 	}
-	if !isStrongPassword(password) {
-		return fmt.Errorf("password is not strong enough")
+	if err := isStrongPassword(password); err != nil {
+		return err
 	}
 	return nil
 }
 
-func isStrongPassword(password string) bool {
+func isStrongPassword(password string) error {
 	var (
-		hasMinLen  = len(password) >= 8
-		hasUpper   = false
-		hasLower   = false
-		hasNumber  = false
-		hasSpecial = false
+		hasMinLen = len(password) >= 6
+		hasNumber = false
 	)
+	if len(password) == 0 {
+		return apperrors.NewValidationError("password cannot be empty")
+	}
+
 	for _, char := range password {
 		switch {
-		case unicode.IsUpper(char):
-			hasUpper = true
-		case unicode.IsLower(char):
-			hasLower = true
 		case unicode.IsNumber(char):
 			hasNumber = true
-		case unicode.IsPunct(char) || unicode.IsSymbol(char):
-			hasSpecial = true
 		}
 	}
-	return hasMinLen && hasUpper && hasLower && hasNumber && hasSpecial
+
+	if !hasMinLen {
+		return apperrors.NewValidationError("password must be at least 6 characters long")
+	}
+	if !hasNumber {
+		return apperrors.NewValidationError("password must contain at least one number")
+	}
+
+	return nil
 }

@@ -46,13 +46,13 @@ export default function ProfileScreen({ navigation }: any) {
     try {
       const [profileRes, walletRes] = await Promise.all([
         userApi.getProfile(),
-        walletApi.getBalance()
+        walletApi.getBalance(),
       ]);
 
       setProfile(profileRes.data);
       setBalance(walletRes.data.balance || 0);
 
-      if (profileRes.data.name) await AsyncStorage.setItem('userName', profileRes.data.name);
+      if (profileRes.data.name) {await AsyncStorage.setItem('userName', profileRes.data.name);}
     } catch {
       // fail silently – user can see the logout button
     }

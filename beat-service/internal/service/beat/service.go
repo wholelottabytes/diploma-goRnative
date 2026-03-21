@@ -24,6 +24,7 @@ type BeatRepository interface {
 	Create(ctx context.Context, beat *models.Beat) (string, error)
 	FindByID(ctx context.Context, id string) (*models.Beat, error)
 	FindByIDs(ctx context.Context, ids []string) ([]*models.Beat, error)
+	FindAll(ctx context.Context) ([]*models.Beat, error)
 	Search(ctx context.Context, query string) ([]*models.Beat, error)
 	Update(ctx context.Context, id string, beat *models.Beat) error
 	Delete(ctx context.Context, id string) error

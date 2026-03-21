@@ -1,0 +1,115 @@
+--------- beginning of main
+03-21 19:28:12.812   625  2778 W libperfmgr: Failed to write to node: /dev/stune/top-app/schedtune.boost with value: 10, fd: -1
+03-21 19:28:12.812   625  2778 W libperfmgr: Failed to write to node: /proc/sys/kernel/sched_boost with value: 0, fd: -1
+03-21 19:28:13.313   625  2778 W libperfmgr: Failed to write to node: /dev/stune/top-app/schedtune.boost with value: 10, fd: -1
+03-21 19:28:13.313   625  2778 W libperfmgr: Failed to write to node: /proc/sys/kernel/sched_boost with value: 0, fd: -1
+03-21 19:28:13.529  5973  5973 W libbinder.BackendUnifiedServiceManager: Thread Pool max thread count is 0. Cannot cache binder as linkToDeath cannot be implemented. serviceName: deviceidle
+03-21 19:28:13.547  5975  5975 W libbinder.BackendUnifiedServiceManager: Thread Pool max thread count is 0. Cannot cache binder as linkToDeath cannot be implemented. serviceName: battery
+03-21 19:28:13.574  5977  5977 W libbinder.BackendUnifiedServiceManager: Thread Pool max thread count is 0. Cannot cache binder as linkToDeath cannot be implemented. serviceName: deviceidle
+03-21 19:28:13.601  5980  5980 W libbinder.BackendUnifiedServiceManager: Thread Pool max thread count is 0. Cannot cache binder as linkToDeath cannot be implemented. serviceName: activity
+03-21 19:28:13.648  5989  5989 W libbinder.BackendUnifiedServiceManager: Thread Pool max thread count is 0. Cannot cache binder as linkToDeath cannot be implemented. serviceName: battery
+03-21 19:28:13.813   625  2778 W libperfmgr: Failed to write to node: /dev/stune/top-app/schedtune.boost with value: 10, fd: -1
+03-21 19:28:13.813   625  2778 W libperfmgr: Failed to write to node: /proc/sys/kernel/sched_boost with value: 0, fd: -1
+03-21 19:28:14.313   625  2778 W libperfmgr: Failed to write to node: /dev/stune/top-app/schedtune.boost with value: 10, fd: -1
+03-21 19:28:14.313   625  2778 W libperfmgr: Failed to write to node: /proc/sys/kernel/sched_boost with value: 0, fd: -1
+03-21 19:28:14.813   625  2778 W libperfmgr: Failed to write to node: /dev/stune/top-app/schedtune.boost with value: 10, fd: -1
+03-21 19:28:14.813   625  2778 W libperfmgr: Failed to write to node: /proc/sys/kernel/sched_boost with value: 0, fd: -1
+03-21 19:28:15.065   881   881 I WifiHAL : feature_set=0x8488141a
+03-21 19:28:15.065  1587  1927 I HalDevMgr: bestIfaceCreationProposal is null, requestIface=STA, existingIface=[name=wlan0 type=STA]
+03-21 19:28:15.314   625  2778 W libperfmgr: Failed to write to node: /dev/stune/top-app/schedtune.boost with value: 10, fd: -1
+03-21 19:28:15.314   625  2778 W libperfmgr: Failed to write to node: /proc/sys/kernel/sched_boost with value: 0, fd: -1
+03-21 19:28:15.814   625  2778 W libperfmgr: Failed to write to node: /dev/stune/top-app/schedtune.boost with value: 10, fd: -1
+03-21 19:28:15.814   625  2778 W libperfmgr: Failed to write to node: /proc/sys/kernel/sched_boost with value: 0, fd: -1
+--------- beginning of system
+03-21 19:28:16.223  1587  3519 W ActivityTaskManager: callingPackage for (uid=2000, pid=6002) has no WPC
+03-21 19:28:16.229  1587  3519 I ActivityTaskManager: START u0 {flg=0x10000000 xflg=0x5 cmp=com.rnat/.MainActivity} with LAUNCH_SINGLE_TASK from uid 2000 (com.android.shell) (BAL_ALLOW_PERMISSION) result code=3
+03-21 19:28:16.230   852  1094 I hwcomposer: [DRMDEV] (0) failed to waitNextVsync: -1  
+03-21 19:28:16.232   852  1094 I hwcomposer: [DRMDEV] (0) failed to waitNextVsync: -1  
+03-21 19:28:16.232   877   877 I Accelerometer: batch: handle:0, flag:0,samplingPeriodNs:80000000 maxBatchReportLatencyNs:2000000000
+03-21 19:28:16.235  5298  5298 W unknown:ReactInstanceManager: Instance detached from instance manager
+03-21 19:28:16.237   877   877 I Accelerometer: batch: handle:0, flag:0,samplingPeriodNs:66667000 maxBatchReportLatencyNs:0
+03-21 19:28:16.240   877   877 I Accelerometer: flush, flushCnt:1
+03-21 19:28:16.242   877   924 I Accelerometer: flush complete, flushCnt:0
+03-21 19:28:16.243   852  1094 I hwcomposer: [DRMDEV] (0) failed to waitNextVsync: -1  
+03-21 19:28:16.252   844  6006 I resolv  : GetAddrInfoHandler::run: {102 102 102 983142 10399 0}
+03-21 19:28:16.252   844  6008 I resolv  : res_nmkquery: (QUERY, IN, A)
+03-21 19:28:16.252   914   988 E surfaceflinger: == MALI DEBUG ===eglp_winsys_populate_image_templates ==12288
+03-21 19:28:16.254   852  1094 I hwcomposer: [DRMDEV] (0) failed to waitNextVsync: -1  
+03-21 19:28:16.262   844  6008 I resolv  : res_nsend: used send_dg 43 terrno: 0
+03-21 19:28:16.262   844  6008 I resolv  : doQuery: rcode=0, ancount=1, return value=43
+03-21 19:28:16.265   852  1095 I hwcomposer: [HWCDisplay] [Display_0 (type:1)] fps:0.237268,dur:12643.95,max:12520.78,min:10.62  
+03-21 19:28:16.265   852  1094 I hwcomposer: [DRMDEV] (0) failed to waitNextVsync: -1  
+03-21 19:28:16.314   625  2778 W libperfmgr: Failed to write to node: /dev/stune/top-app/schedtune.boost with value: 10, fd: -1
+03-21 19:28:16.314   625  2778 W libperfmgr: Failed to write to node: /proc/sys/kernel/sched_boost with value: 0, fd: -1
+03-21 19:28:16.410   852  1054 I hwcomposer: [HWC] (0)fire a callback of refresh to SF[4]  
+03-21 19:28:16.414   625  2778 W libperfmgr: Failed to write to node: /dev/stune/top-app/schedtune.boost with value: 10, fd: -1
+03-21 19:28:16.414   625  2778 W libperfmgr: Failed to write to node: /proc/sys/kernel/sched_boost with value: 0, fd: -1
+03-21 19:28:16.491   625  2778 W libperfmgr: Failed to write to node: /dev/stune/top-app/schedtune.boost with value: 10, fd: -1
+03-21 19:28:16.491   625  2778 W libperfmgr: Failed to write to node: /proc/sys/kernel/sched_boost with value: 0, fd: -1
+03-21 19:28:16.991   625  2778 W libperfmgr: Failed to write to node: /dev/stune/top-app/schedtune.boost with value: 10, fd: -1
+03-21 19:28:16.991   625  2778 W libperfmgr: Failed to write to node: /proc/sys/kernel/sched_boost with value: 0, fd: -1
+03-21 19:28:17.492   625  2778 W libperfmgr: Failed to write to node: /dev/stune/top-app/schedtune.boost with value: 10, fd: -1
+03-21 19:28:17.492   625  2778 W libperfmgr: Failed to write to node: /proc/sys/kernel/sched_boost with value: 0, fd: -1
+03-21 19:28:17.992   625  2778 W libperfmgr: Failed to write to node: /dev/stune/top-app/schedtune.boost with value: 10, fd: -1
+03-21 19:28:17.992   625  2778 W libperfmgr: Failed to write to node: /proc/sys/kernel/sched_boost with value: 0, fd: -1
+03-21 19:28:18.077   881   881 I WifiHAL : feature_set=0x8488141a
+03-21 19:28:18.077  1587  1927 I HalDevMgr: bestIfaceCreationProposal is null, requestIface=STA, existingIface=[name=wlan0 type=STA]
+03-21 19:28:18.492   625  2778 W libperfmgr: Failed to write to node: /dev/stune/top-app/schedtune.boost with value: 10, fd: -1
+03-21 19:28:18.492   625  2778 W libperfmgr: Failed to write to node: /proc/sys/kernel/sched_boost with value: 0, fd: -1
+03-21 19:28:18.993   625  2778 W libperfmgr: Failed to write to node: /dev/stune/top-app/schedtune.boost with value: 10, fd: -1
+03-21 19:28:18.993   625  2778 W libperfmgr: Failed to write to node: /proc/sys/kernel/sched_boost with value: 0, fd: -1
+03-21 19:28:19.493   625  2778 W libperfmgr: Failed to write to node: /dev/stune/top-app/schedtune.boost with value: 10, fd: -1
+03-21 19:28:19.493   625  2778 W libperfmgr: Failed to write to node: /proc/sys/kernel/sched_boost with value: 0, fd: -1
+03-21 19:28:19.864  6009  6009 W libbinder.BackendUnifiedServiceManager: Thread Pool max thread count is 0. Cannot cache binder as linkToDeath cannot be implemented. serviceName: deviceidle
+03-21 19:28:19.892  6011  6011 W libbinder.BackendUnifiedServiceManager: Thread Pool max thread count is 0. Cannot cache binder as linkToDeath cannot be implemented. serviceName: battery
+03-21 19:28:19.909  6013  6013 W libbinder.BackendUnifiedServiceManager: Thread Pool max thread count is 0. Cannot cache binder as linkToDeath cannot be implemented. serviceName: deviceidle
+03-21 19:28:19.936  6016  6016 W libbinder.BackendUnifiedServiceManager: Thread Pool max thread count is 0. Cannot cache binder as linkToDeath cannot be implemented. serviceName: activity
+03-21 19:28:19.993   625  2778 W libperfmgr: Failed to write to node: /dev/stune/top-app/schedtune.boost with value: 10, fd: -1
+03-21 19:28:19.993   625  2778 W libperfmgr: Failed to write to node: /proc/sys/kernel/sched_boost with value: 0, fd: -1
+03-21 19:28:19.995  6025  6025 W libbinder.BackendUnifiedServiceManager: Thread Pool max thread count is 0. Cannot cache binder as linkToDeath cannot be implemented. serviceName: battery
+03-21 19:28:20.493   625  2778 W libperfmgr: Failed to write to node: /dev/stune/top-app/schedtune.boost with value: 10, fd: -1
+03-21 19:28:20.493   625  2778 W libperfmgr: Failed to write to node: /proc/sys/kernel/sched_boost with value: 0, fd: -1
+03-21 19:28:20.994   625  2778 W libperfmgr: Failed to write to node: /dev/stune/top-app/schedtune.boost with value: 10, fd: -1
+03-21 19:28:20.994   625  2778 W libperfmgr: Failed to write to node: /proc/sys/kernel/sched_boost with value: 0, fd: -1
+03-21 19:28:21.089   881   881 I WifiHAL : feature_set=0x8488141a
+03-21 19:28:21.090  1587  1927 I HalDevMgr: bestIfaceCreationProposal is null, requestIface=STA, existingIface=[name=wlan0 type=STA]
+03-21 19:28:21.145   852  1094 I hwcomposer: [DRMDEV] (0) failed to waitNextVsync: -1  
+03-21 19:28:21.145  1587  1708 I DisplayPowerController[0]: BrightnessEvent: brt=8.54597E-4(5.0%), nits=3.4861262, lux=-1.0, reason=manual [ dim ], strat=FallbackBrightnessStrategy, state=ON, stateReason=DEFAULT_POLICY, policy=DIM, flags=, initBrt=1.0, rcmdBrt=NaN, preBrt=NaN, preLux=0.0, wasShortTermModelActive=false, autoBrightness=false (default), unclampedBrt=1.0, hbmMax=1.0, hbmMode=sunlight, thrmMax=1.0, rbcStrength=50, powerFactor=1.0, physDisp=Built-in Screen(local:4627039422300187648), logicalId=0, slowChange=false, rampSpeed=0.70472443
+03-21 19:28:21.494   625  2778 W libperfmgr: Failed to write to node: /dev/stune/top-app/schedtune.boost with value: 10, fd: -1
+03-21 19:28:21.494   625  2778 W libperfmgr: Failed to write to node: /proc/sys/kernel/sched_boost with value: 0, fd: -1
+03-21 19:28:21.994   625  2778 W libperfmgr: Failed to write to node: /dev/stune/top-app/schedtune.boost with value: 10, fd: -1
+03-21 19:28:21.994   625  2778 W libperfmgr: Failed to write to node: /proc/sys/kernel/sched_boost with value: 0, fd: -1
+03-21 19:28:22.495   625  2778 W libperfmgr: Failed to write to node: /dev/stune/top-app/schedtune.boost with value: 10, fd: -1
+03-21 19:28:22.495   625  2778 W libperfmgr: Failed to write to node: /proc/sys/kernel/sched_boost with value: 0, fd: -1
+03-21 19:28:22.995   625  2778 W libperfmgr: Failed to write to node: /dev/stune/top-app/schedtune.boost with value: 10, fd: -1
+03-21 19:28:22.995   625  2778 W libperfmgr: Failed to write to node: /proc/sys/kernel/sched_boost with value: 0, fd: -1
+03-21 19:28:23.020  5796  5827 I emmv    : Validating WorkManager process
+03-21 19:28:23.021  5796  5811 I emmv    : (REDACTED) Processes: %s, %s, %s, %s
+03-21 19:28:23.495   625  2778 W libperfmgr: Failed to write to node: /dev/stune/top-app/schedtune.boost with value: 10, fd: -1
+03-21 19:28:23.495   625  2778 W libperfmgr: Failed to write to node: /proc/sys/kernel/sched_boost with value: 0, fd: -1
+03-21 19:28:23.995   625  2778 W libperfmgr: Failed to write to node: /dev/stune/top-app/schedtune.boost with value: 10, fd: -1
+03-21 19:28:23.995   625  2778 W libperfmgr: Failed to write to node: /proc/sys/kernel/sched_boost with value: 0, fd: -1
+03-21 19:28:24.097   881   881 I WifiHAL : feature_set=0x8488141a
+03-21 19:28:24.098  1587  1927 I HalDevMgr: bestIfaceCreationProposal is null, requestIface=STA, existingIface=[name=wlan0 type=STA]
+03-21 19:28:24.496   625  2778 W libperfmgr: Failed to write to node: /dev/stune/top-app/schedtune.boost with value: 10, fd: -1
+03-21 19:28:24.496   625  2778 W libperfmgr: Failed to write to node: /proc/sys/kernel/sched_boost with value: 0, fd: -1
+03-21 19:28:24.996   625  2778 W libperfmgr: Failed to write to node: /dev/stune/top-app/schedtune.boost with value: 10, fd: -1
+03-21 19:28:24.996   625  2778 W libperfmgr: Failed to write to node: /proc/sys/kernel/sched_boost with value: 0, fd: -1
+03-21 19:28:25.496   625  2778 W libperfmgr: Failed to write to node: /dev/stune/top-app/schedtune.boost with value: 10, fd: -1
+03-21 19:28:25.496   625  2778 W libperfmgr: Failed to write to node: /proc/sys/kernel/sched_boost with value: 0, fd: -1
+03-21 19:28:25.996   625  2778 W libperfmgr: Failed to write to node: /dev/stune/top-app/schedtune.boost with value: 10, fd: -1
+03-21 19:28:25.996   625  2778 W libperfmgr: Failed to write to node: /proc/sys/kernel/sched_boost with value: 0, fd: -1
+03-21 19:28:26.210  6035  6035 W libbinder.BackendUnifiedServiceManager: Thread Pool max thread count is 0. Cannot cache binder as linkToDeath cannot be implemented. serviceName: deviceidle
+03-21 19:28:26.226  6037  6037 W libbinder.BackendUnifiedServiceManager: Thread Pool max thread count is 0. Cannot cache binder as linkToDeath cannot be implemented. serviceName: battery
+03-21 19:28:26.242  6039  6039 W libbinder.BackendUnifiedServiceManager: Thread Pool max thread count is 0. Cannot cache binder as linkToDeath cannot be implemented. serviceName: deviceidle
+03-21 19:28:26.266  6042  6042 W libbinder.BackendUnifiedServiceManager: Thread Pool max thread count is 0. Cannot cache binder as linkToDeath cannot be implemented. serviceName: activity
+03-21 19:28:26.327  6051  6051 W libbinder.BackendUnifiedServiceManager: Thread Pool max thread count is 0. Cannot cache binder as linkToDeath cannot be implemented. serviceName: battery
+03-21 19:28:26.497   625  2778 W libperfmgr: Failed to write to node: /dev/stune/top-app/schedtune.boost with value: 10, fd: -1
+03-21 19:28:26.497   625  2778 W libperfmgr: Failed to write to node: /proc/sys/kernel/sched_boost with value: 0, fd: -1
+03-21 19:28:26.603   852  1094 I hwcomposer: [DRMDEV] (0) failed to waitNextVsync: -1  
+03-21 19:28:26.610   852  1094 I hwcomposer: [DRMDEV] (0) failed to waitNextVsync: -1  
+03-21 19:28:26.621   852  1094 I hwcomposer: [DRMDEV] (0) failed to waitNextVsync: -1  
+03-21 19:28:26.632   852  1094 I hwcomposer: [DRMDEV] (0) failed to waitNextVsync: -1  
+03-21 19:28:26.643   852  1094 I hwcomposer: [DRMDEV] (0) failed to waitNextVsync: -1  
+03-21 19:28:26.654   852  1094 I hwcomposer: [DRMDEV] (0) failed to waitNextVsync: -1  
+03-21 19:28:26.665   852  1094 I hwcomposer: [DRMDEV] (0) failed to waitNextVsync: -1  

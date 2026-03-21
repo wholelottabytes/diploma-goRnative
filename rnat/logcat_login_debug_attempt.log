@@ -1,0 +1,72 @@
+--------- beginning of main
+03-21 21:27:56.800  5906  5906 W libbinder.BackendUnifiedServiceManager: Thread Pool max thread count is 0. Cannot cache binder as linkToDeath cannot be implemented. serviceName: battery
+03-21 21:27:56.998   852  1054 I hwcomposer: [HWC] (0)fire a callback of refresh to SF[4]  
+03-21 21:27:57.005   625  2778 W libperfmgr: Failed to write to node: /dev/stune/top-app/schedtune.boost with value: 10, fd: -1
+03-21 21:27:57.005   625  2778 W libperfmgr: Failed to write to node: /proc/sys/kernel/sched_boost with value: 0, fd: -1
+03-21 21:27:57.010   852   992 I hwcomposer: [HWCDisplay] [Display_0 (type:1)] fps:4.672577,dur:1070.07,max:417.84,min:70.48  
+03-21 21:27:57.080   625  2778 W libperfmgr: Failed to write to node: /dev/stune/top-app/schedtune.boost with value: 10, fd: -1
+03-21 21:27:57.080   625  2778 W libperfmgr: Failed to write to node: /proc/sys/kernel/sched_boost with value: 0, fd: -1
+03-21 21:27:57.498   852  1054 I hwcomposer: [HWC] (0)fire a callback of refresh to SF[4]  
+03-21 21:27:57.505   625  2778 W libperfmgr: Failed to write to node: /dev/stune/top-app/schedtune.boost with value: 10, fd: -1
+03-21 21:27:57.505   625  2778 W libperfmgr: Failed to write to node: /proc/sys/kernel/sched_boost with value: 0, fd: -1
+03-21 21:27:57.579   625  2778 W libperfmgr: Failed to write to node: /dev/stune/top-app/schedtune.boost with value: 10, fd: -1
+03-21 21:27:57.580   625  2778 W libperfmgr: Failed to write to node: /proc/sys/kernel/sched_boost with value: 0, fd: -1
+03-21 21:27:57.998   852  1054 I hwcomposer: [HWC] (0)fire a callback of refresh to SF[4]  
+03-21 21:27:58.005   625  2778 W libperfmgr: Failed to write to node: /dev/stune/top-app/schedtune.boost with value: 10, fd: -1
+03-21 21:27:58.005   625  2778 W libperfmgr: Failed to write to node: /proc/sys/kernel/sched_boost with value: 0, fd: -1
+03-21 21:27:58.079   625  2778 W libperfmgr: Failed to write to node: /dev/stune/top-app/schedtune.boost with value: 10, fd: -1
+03-21 21:27:58.080   625  2778 W libperfmgr: Failed to write to node: /proc/sys/kernel/sched_boost with value: 0, fd: -1
+03-21 21:27:58.401   881  2016 I WifiHAL : feature_set=0x8488141a
+03-21 21:27:58.402  1587  1927 I HalDevMgr: bestIfaceCreationProposal is null, requestIface=STA, existingIface=[name=wlan0 type=STA]
+03-21 21:27:58.439   852   992 I hwcomposer: [HWCDisplay] [Display_0 (type:1)] fps:3.498837,dur:1429.05,max:429.68,min:70.15  
+03-21 21:27:58.498   852  1054 I hwcomposer: [HWC] (0)fire a callback of refresh to SF[4]  
+03-21 21:27:58.505   625  2778 W libperfmgr: Failed to write to node: /dev/stune/top-app/schedtune.boost with value: 10, fd: -1
+03-21 21:27:58.505   625  2778 W libperfmgr: Failed to write to node: /proc/sys/kernel/sched_boost with value: 0, fd: -1
+03-21 21:27:58.579   625  2778 W libperfmgr: Failed to write to node: /dev/stune/top-app/schedtune.boost with value: 10, fd: -1
+03-21 21:27:58.580   625  2778 W libperfmgr: Failed to write to node: /proc/sys/kernel/sched_boost with value: 0, fd: -1
+03-21 21:27:58.998   852  1054 I hwcomposer: [HWC] (0)fire a callback of refresh to SF[4]  
+03-21 21:27:59.004   625  2778 W libperfmgr: Failed to write to node: /dev/stune/top-app/schedtune.boost with value: 10, fd: -1
+03-21 21:27:59.004   625  2778 W libperfmgr: Failed to write to node: /proc/sys/kernel/sched_boost with value: 0, fd: -1
+03-21 21:27:59.079   625  2778 W libperfmgr: Failed to write to node: /dev/stune/top-app/schedtune.boost with value: 10, fd: -1
+03-21 21:27:59.079   625  2778 W libperfmgr: Failed to write to node: /proc/sys/kernel/sched_boost with value: 0, fd: -1
+03-21 21:27:59.498   852  1054 I hwcomposer: [HWC] (0)fire a callback of refresh to SF[4]  
+03-21 21:27:59.504   625  2778 W libperfmgr: Failed to write to node: /dev/stune/top-app/schedtune.boost with value: 10, fd: -1
+03-21 21:27:59.504   625  2778 W libperfmgr: Failed to write to node: /proc/sys/kernel/sched_boost with value: 0, fd: -1
+03-21 21:27:59.510   852   992 I hwcomposer: [HWCDisplay] [Display_0 (type:1)] fps:4.672285,dur:1070.14,max:429.32,min:70.43  
+03-21 21:27:59.579   625  2778 W libperfmgr: Failed to write to node: /dev/stune/top-app/schedtune.boost with value: 10, fd: -1
+03-21 21:27:59.579   625  2778 W libperfmgr: Failed to write to node: /proc/sys/kernel/sched_boost with value: 0, fd: -1
+03-21 21:27:59.998   852  1054 I hwcomposer: [HWC] (0)fire a callback of refresh to SF[4]  
+03-21 21:28:00.004   625  2778 W libperfmgr: Failed to write to node: /dev/stune/top-app/schedtune.boost with value: 10, fd: -1
+03-21 21:28:00.004   625  2778 W libperfmgr: Failed to write to node: /proc/sys/kernel/sched_boost with value: 0, fd: -1
+03-21 21:28:00.061   625  2778 W libperfmgr: Failed to write to node: /dev/stune/top-app/schedtune.boost with value: 10, fd: -1
+03-21 21:28:00.061   625  2778 W libperfmgr: Failed to write to node: /proc/sys/kernel/sched_boost with value: 0, fd: -1
+03-21 21:28:00.122   852  1054 I hwcomposer: [HWC] (0)fire a callback of refresh to SF[4]  
+03-21 21:28:00.126   625  2778 W libperfmgr: Failed to write to node: /dev/stune/top-app/schedtune.boost with value: 10, fd: -1
+03-21 21:28:00.127   625  2778 W libperfmgr: Failed to write to node: /proc/sys/kernel/sched_boost with value: 0, fd: -1
+03-21 21:28:00.203   625  2778 W libperfmgr: Failed to write to node: /dev/stune/top-app/schedtune.boost with value: 10, fd: -1
+03-21 21:28:00.203   625  2778 W libperfmgr: Failed to write to node: /proc/sys/kernel/sched_boost with value: 0, fd: -1
+03-21 21:28:00.398  1587  1910 I ImeTracker: system_server:ec6905df: onTimeout at PHASE_WM_GET_CONTROL_WITH_LEASH
+03-21 21:28:00.502   852  1054 I hwcomposer: [HWC] (0)fire a callback of refresh to SF[4]  
+03-21 21:28:00.515   625  2778 W libperfmgr: Failed to write to node: /dev/stune/top-app/schedtune.boost with value: 10, fd: -1
+03-21 21:28:00.516   625  2778 W libperfmgr: Failed to write to node: /proc/sys/kernel/sched_boost with value: 0, fd: -1
+03-21 21:28:00.521   852   992 I hwcomposer: [HWCDisplay] [Display_0 (type:1)] fps:5.934151,dur:1011.10,max:429.41,min:51.39  
+03-21 21:28:00.583   625  2778 W libperfmgr: Failed to write to node: /dev/stune/top-app/schedtune.boost with value: 10, fd: -1
+03-21 21:28:00.584   625  2778 W libperfmgr: Failed to write to node: /proc/sys/kernel/sched_boost with value: 0, fd: -1
+03-21 21:28:01.002   852  1054 I hwcomposer: [HWC] (0)fire a callback of refresh to SF[4]  
+03-21 21:28:01.015   625  2778 W libperfmgr: Failed to write to node: /dev/stune/top-app/schedtune.boost with value: 10, fd: -1
+03-21 21:28:01.015   625  2778 W libperfmgr: Failed to write to node: /proc/sys/kernel/sched_boost with value: 0, fd: -1
+03-21 21:28:01.083   625  2778 W libperfmgr: Failed to write to node: /dev/stune/top-app/schedtune.boost with value: 10, fd: -1
+03-21 21:28:01.084   625  2778 W libperfmgr: Failed to write to node: /proc/sys/kernel/sched_boost with value: 0, fd: -1
+03-21 21:28:01.417   881  2016 I WifiHAL : feature_set=0x8488141a
+03-21 21:28:01.418  1587  1927 I HalDevMgr: bestIfaceCreationProposal is null, requestIface=STA, existingIface=[name=wlan0 type=STA]
+03-21 21:28:01.498   852  1054 I hwcomposer: [HWC] (0)fire a callback of refresh to SF[4]  
+03-21 21:28:01.504   625  2778 W libperfmgr: Failed to write to node: /dev/stune/top-app/schedtune.boost with value: 10, fd: -1
+03-21 21:28:01.504   625  2778 W libperfmgr: Failed to write to node: /proc/sys/kernel/sched_boost with value: 0, fd: -1
+03-21 21:28:01.579   625  2778 W libperfmgr: Failed to write to node: /dev/stune/top-app/schedtune.boost with value: 10, fd: -1
+03-21 21:28:01.579   625  2778 W libperfmgr: Failed to write to node: /proc/sys/kernel/sched_boost with value: 0, fd: -1
+03-21 21:28:01.938   852   992 I hwcomposer: [HWCDisplay] [Display_0 (type:1)] fps:3.526918,dur:1417.67,max:428.92,min:70.92  
+03-21 21:28:01.998   852  1054 I hwcomposer: [HWC] (0)fire a callback of refresh to SF[4]  
+03-21 21:28:02.004   625  2778 W libperfmgr: Failed to write to node: /dev/stune/top-app/schedtune.boost with value: 10, fd: -1
+03-21 21:28:02.004   625  2778 W libperfmgr: Failed to write to node: /proc/sys/kernel/sched_boost with value: 0, fd: -1
+03-21 21:28:02.079   625  2778 W libperfmgr: Failed to write to node: /dev/stune/top-app/schedtune.boost with value: 10, fd: -1
+03-21 21:28:02.079   625  2778 W libperfmgr: Failed to write to node: /proc/sys/kernel/sched_boost with value: 0, fd: -1

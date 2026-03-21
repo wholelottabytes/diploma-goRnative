@@ -44,20 +44,20 @@ const UserProfileScreen: React.FC<UserProfileScreenProps> = ({ route }) => {
       }
 
       const response = await fetch(`${SERVER}/users/by-username/${username}?page=${pageNum}`);
-      
+
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
       const data = await response.json();
-      
+
       if (pageNum === 1) {
         setUser(data.user);
         setBeats(data.beats);
       } else {
         setBeats(prev => [...prev, ...data.beats]);
       }
-      
+
       setPage(pageNum);
       setTotalPages(data.totalPages);
     } catch (error) {
@@ -65,7 +65,7 @@ const UserProfileScreen: React.FC<UserProfileScreenProps> = ({ route }) => {
     } finally {
       setLoading(false);
       setRefreshing(false);
-      if (initialLoad) setInitialLoad(false);
+      if (initialLoad) {setInitialLoad(false);}
     }
   }, [username, initialLoad]);
 
@@ -92,7 +92,7 @@ const UserProfileScreen: React.FC<UserProfileScreenProps> = ({ route }) => {
         source={{
           uri: item.imageUrl
             ? `${SERVER}/${item.imageUrl}`
-            : 'https://via.placeholder.com/150'
+            : 'https://via.placeholder.com/150',
         }}
         style={styles.beatImage}
       />
@@ -108,7 +108,7 @@ const UserProfileScreen: React.FC<UserProfileScreenProps> = ({ route }) => {
   ), [navigation]);
 
   const renderFooter = useCallback(() => {
-    if (!loading) return null;
+    if (!loading) {return null;}
     return (
       <View style={styles.loadMoreContainer}>
         <ActivityIndicator size="large" color="#fff" />
@@ -134,7 +134,7 @@ const UserProfileScreen: React.FC<UserProfileScreenProps> = ({ route }) => {
                 source={{
                   uri: user?.userPhoto
                     ? `${SERVER}/${user.userPhoto}`
-                    : 'https://via.placeholder.com/150'
+                    : 'https://via.placeholder.com/150',
                 }}
                 style={styles.avatar}
               />

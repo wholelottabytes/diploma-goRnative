@@ -15,6 +15,7 @@ import (
 	"github.com/bns/beat-service/internal/server"
 	"github.com/bns/beat-service/internal/service"
 	beatservice "github.com/bns/beat-service/internal/service/beat"
+	"github.com/bns/beat-service/internal/seeder"
 	"github.com/bns/beat-service/internal/transport/rest"
 	"github.com/bns/pkg/kafka"
 	esv8 "github.com/elastic/go-elasticsearch/v8"
@@ -77,6 +78,10 @@ func main() {
 
 	beatSvc := beatservice.NewBeatService(beatRepo, fileRepo, userClient, kafkaProducer)
 	services := service.New(beatSvc, cfg)
+
+	// Call the seeder after services are initialized
+	seeder.SeedData(beatSvc, beatRepo, "660c18400000000000000001") // Using a dummy user ID
+
 	restHandler := rest.NewHandler(services)
 	mainServer := server.New(cfg, services, restHandler)
 	application := app.New(mainServer)

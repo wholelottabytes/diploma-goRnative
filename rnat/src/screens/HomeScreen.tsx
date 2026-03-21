@@ -14,13 +14,10 @@ import {
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { AuthContext } from '../context/AuthContext';
-import { Colors, Typography, Spacing, BorderRadius, Shadow } from '../theme/theme';
+import { Colors, Typography, Spacing, BorderRadius } from '../theme/theme';
 import { beatApi } from '../api/services';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Search } from 'react-native-feather';
 
 const { width } = Dimensions.get('window');
-const CARD_WIDTH = width - Spacing['2xl'] * 2;
 
 interface Beat {
   id: string;
@@ -175,7 +172,7 @@ export default function HomeScreen({ navigation }: any) {
         renderItem={({ item }) => (
           <BeatCard
             beat={item}
-            onPress={() => navigation.navigate('BeatDetails', { beatId: item.id })}
+            onPress={() => navigation.navigate('BeatDetails', { beat: item })}
           />
         )}
         ListHeaderComponent={renderHeader}

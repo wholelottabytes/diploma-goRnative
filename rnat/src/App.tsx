@@ -22,8 +22,7 @@ import { Colors } from './theme/theme';
 
 // Icons – using emoji fallbacks for maximum compatibility
 const TabIcon = ({ emoji, focused }: { emoji: string; focused: boolean }) => {
-  const React2 = require('react');
-  const { Text, View } = require('react-native');
+  const { Text, View } = require('react-native'); // Keep require for Text/View here if not imported globally
   return (
     <View style={{ alignItems: 'center' }}>
       <Text style={{ fontSize: 20, opacity: focused ? 1 : 0.5 }}>{emoji}</Text>

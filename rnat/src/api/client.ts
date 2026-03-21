@@ -2,7 +2,7 @@ import axios from 'axios';
 import config from '../screens/config';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const BASE_URL = config.API_URL;
+const BASE_URL = config.API_URL + '/api';
 
 const client = axios.create({
   baseURL: BASE_URL,
@@ -13,16 +13,16 @@ const client = axios.create({
 
 // Interceptor to add auth token
 client.interceptors.request.use(
-  async (config) => {
+  async (reqConfig) => {
     try {
       const token = await AsyncStorage.getItem('token');
       if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
+        reqConfig.headers.Authorization = `Bearer ${token}`;
       }
     } catch (e) {
       console.error('Error getting token from Async Storage', e);
     }
-    return config;
+    return reqConfig;
   },
   (error) => Promise.reject(error),
 );

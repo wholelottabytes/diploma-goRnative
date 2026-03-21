@@ -1,11 +1,11 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { 
-  View, 
-  Text, 
-  StyleSheet, 
-  TouchableOpacity, 
-  Animated, 
-  Easing, 
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Animated,
+  Easing,
   Dimensions,
   Alert,
   ScrollView,
@@ -17,47 +17,16 @@ import Slider from '@react-native-community/slider';
 import Video, { OnLoadData, OnProgressData } from 'react-native-video';
 import { Star, Play, Pause, ShoppingCart, Edit2, Trash2, Check, X } from 'react-native-feather';
 import LinearGradient from 'react-native-linear-gradient';
-import { BeatDetailsScreenProps } from '../types/type';
+import { Beat, BeatDetailsScreenProps } from '../types/type'; // Import Beat from types
 import { beatApi, interactionApi, orderApi, userApi } from '../api/services';
-import { Colors, Typography, Spacing, BorderRadius } from '../theme/theme';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
-const { width } = Dimensions.get('window');
-const AnimatedStar = Animated.createAnimatedComponent(Star);
-
-interface VideoRefType {
-  seek: (time: number) => void;
-}
-
-interface Comment {
-  id: string;
-  text: string;
-  username: string;
-  createdAt: string;
-  userID: string;
-}
-
-interface Beat {
-  id: string;
-  title: string;
-  description: string;
-  price: number;
-  tags: string[];
-  author_id: string;
-  author_name: string;
-  author_avatar?: string;
-  image_url?: string;
-  audio_url?: string;
-}
-
-const BeatDetailsScreen: React.FC<BeatDetailsScreenProps> = ({ route, navigation }) => {
-  const { beat } = route.params;
+import { Colors } from '../theme/theme'; // Keep Colors for styling, others are not used
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [rating, setRating] = useState(0);
   const [averageRating, setAverageRating] = useState<number | null>(null);
-  const [user, setUser] = useState<{username: string} | null>(null);
+  const [user, setUser] = useState<{_id?: string; username: string} | null>(null); // user should have _id for comparison
   const [comments, setComments] = useState<Comment[]>([]);
   const [commentText, setCommentText] = useState('');
   const [commentsPage, setCommentsPage] = useState(1);
@@ -66,7 +35,7 @@ const BeatDetailsScreen: React.FC<BeatDetailsScreenProps> = ({ route, navigation
   const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
   const [editedCommentText, setEditedCommentText] = useState('');
   const [isLoadingComments, setIsLoadingComments] = useState(false);
-  
+
   const floatAnim = useRef(new Animated.Value(0)).current;
   const [isArtworkLoaded, setIsArtworkLoaded] = useState(false);
   const videoRef = useRef<VideoRefType | null>(null);
@@ -97,7 +66,7 @@ const BeatDetailsScreen: React.FC<BeatDetailsScreenProps> = ({ route, navigation
 
   const translateYInterpolation = floatAnim.interpolate({
     inputRange: [0, 1],
-    outputRange: [-15, 15]
+    outputRange: [-15, 15],
   });
 
   const fetchUserData = useCallback(async () => {
@@ -113,7 +82,7 @@ const BeatDetailsScreen: React.FC<BeatDetailsScreenProps> = ({ route, navigation
     try {
       const response = await interactionApi.getRating(beat.id);
       setAverageRating(response.data.average);
-      
+
       const userRatingRes = await interactionApi.getUserRating(beat.id);
       setRating(userRatingRes.data.value);
     } catch (error) {
@@ -189,19 +158,19 @@ const handleDeleteBeat = async () => {
               navigation.goBack();
             } catch (error: any) {
               let errorMessage = 'Failed to delete beat';
-              
+
               // Generic error handling, assuming error.response might exist for API errors
               if (error.response) {
-                errorMessage = error.response.data.message || 
-                               error.response.data.error || 
-                               error.response.statusText || 
+                errorMessage = error.response.data.message ||
+                               error.response.data.error ||
+                               error.response.statusText ||
                                errorMessage;
               } else if (error.message) {
                 errorMessage = error.message;
               }
 
               Alert.alert(
-                'Error', 
+                'Error',
                 errorMessage,
                 [{ text: 'OK', onPress: () => console.error('Delete error:', error) }]
               );
@@ -213,7 +182,7 @@ const handleDeleteBeat = async () => {
     );
   } catch (error) {
     Alert.alert(
-      'Error', 
+      'Error',
       'Failed to initiate deletion',
       [{ text: 'OK', onPress: () => console.error('Init error:', error) }]
     );
@@ -284,15 +253,15 @@ const handleDeleteBeat = async () => {
     setCurrentTime(value);
   };
 
-  const isBeatOwner = user?.username === beat.user?.username || user?.username === beat.author;
+  const isBeatOwner = user?._id === beat.author_id;
   const isAdmin = user?.username === 'admin0';
 
   return (
-    <LinearGradient 
-      colors={['#1a1a1a', '#2a2a2a']} 
+    <LinearGradient
+      colors={['#1a1a1a', '#2a2a2a']}
       style={styles.container}
     >
-      <ScrollView 
+      <ScrollView
         contentContainerStyle={styles.scrollContainer}
         showsVerticalScrollIndicator={false}
       >
@@ -316,10 +285,10 @@ const handleDeleteBeat = async () => {
               {
                 transform: [
                   { rotate: floatInterpolation },
-                  { translateY: translateYInterpolation }
+                  { translateY: translateYInterpolation },
                 ],
-                opacity: isArtworkLoaded ? 1 : 0
-              }
+                opacity: isArtworkLoaded ? 1 : 0,
+              },
             ]}
             onLoad={() => setIsArtworkLoaded(true)}
           />
@@ -327,8 +296,8 @@ const handleDeleteBeat = async () => {
 
         <View style={styles.content}>
           <Text style={styles.title}>{beat.title}</Text>
-          
-          <TouchableOpacity 
+
+          <TouchableOpacity
             onPress={() => navigation.navigate('UserProfile', { userId: beat.author_id })}
           >
             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, marginBottom: 20 }}>
@@ -339,7 +308,7 @@ const handleDeleteBeat = async () => {
             </View>
           </TouchableOpacity>
  {(isAdmin || isBeatOwner) && (
-            <TouchableOpacity 
+            <TouchableOpacity
               style={styles.deleteButton}
               onPress={handleDeleteBeat}
             >
@@ -349,8 +318,8 @@ const handleDeleteBeat = async () => {
           )}
           <View style={styles.ratingContainer}>
             {[1, 2, 3, 4, 5].map((star) => (
-              <TouchableOpacity 
-                key={star} 
+              <TouchableOpacity
+                key={star}
                 onPress={() => handleRate(star)}
                 activeOpacity={0.7}
               >
@@ -378,7 +347,7 @@ const handleDeleteBeat = async () => {
           </View>
 
           <View style={styles.playerControls}>
-            <TouchableOpacity 
+            <TouchableOpacity
               onPress={togglePlay}
               style={styles.playButton}
             >
@@ -410,7 +379,7 @@ const handleDeleteBeat = async () => {
             </Text>
           </View>
 
-          <TouchableOpacity 
+          <TouchableOpacity
             style={styles.buyButton}
             onPress={handleBuy}
           >
@@ -433,7 +402,7 @@ const handleDeleteBeat = async () => {
           {/* Comments Section */}
           <View style={styles.commentsSection}>
             <Text style={styles.sectionTitle}>Comments ({totalComments})</Text>
-            
+
             {isLoadingComments ? (
               <ActivityIndicator size="large" color="#fff" />
             ) : (
@@ -446,7 +415,7 @@ const handleDeleteBeat = async () => {
                         {new Date(comment.createdAt).toLocaleString()}
                       </Text>
                     </View>
-                    
+
                     {editingCommentId === comment.id ? (
                       <>
                         <TextInput
@@ -456,41 +425,41 @@ const handleDeleteBeat = async () => {
                           multiline
                         />
                         <View style={styles.editButtons}>
-                          
-                          <TouchableOpacity 
+
+                          <TouchableOpacity
                             onPress={() => handleEditComment(comment.id)}
                             style={styles.saveEditButton}
                           >
                             <Check width={18} height={18} color="#fff" />
                           </TouchableOpacity>
-                          
-                          <TouchableOpacity 
+
+                          <TouchableOpacity
                             onPress={cancelEditing}
                             style={styles.cancelEditButton}
                           >
                             <X width={18} height={18} color="#fff" />
                           </TouchableOpacity>
-                          
+
                         </View>
                       </>
                     ) : (
                       <Text style={styles.commentText}>{comment.text}</Text>
                     )}
-                    
+
                     {/* Action buttons */}
                     <View style={styles.commentActions}>
                       {(user?.username === comment.username || isAdmin) && (
-                        <TouchableOpacity 
+                        <TouchableOpacity
                           onPress={() => handleDeleteComment(comment.id)}
                           style={styles.commentActionButton}
                         >
                           <Trash2 width={16} height={16} color="#ff4444" />
                         </TouchableOpacity>
                       )}
-                      
+
                       {/* Edit button - show for comment owner or beat owner (admin can already delete) */}
                       {(user?.username === comment.username) && (
-                        <TouchableOpacity 
+                        <TouchableOpacity
                           onPress={() => startEditingComment(comment)}
                           style={styles.commentActionButton}
                         >
@@ -504,7 +473,7 @@ const handleDeleteBeat = async () => {
                 {/* Pagination */}
                 {comments.length > 0 && (
                   <View style={styles.pagination}>
-                    <TouchableOpacity 
+                    <TouchableOpacity
                       onPress={() => setCommentsPage(p => Math.max(1, p - 1))}
                       disabled={commentsPage === 1}
                     >
@@ -512,12 +481,12 @@ const handleDeleteBeat = async () => {
                         Previous
                       </Text>
                     </TouchableOpacity>
-                    
+
                     <Text style={styles.pageInfo}>
                       Page {commentsPage} of {totalCommentsPages}
                     </Text>
-                    
-                    <TouchableOpacity 
+
+                    <TouchableOpacity
                       onPress={() => setCommentsPage(p => Math.min(totalCommentsPages, p + 1))}
                       disabled={commentsPage === totalCommentsPages}
                     >
@@ -539,7 +508,7 @@ const handleDeleteBeat = async () => {
                       style={styles.commentInput}
                       multiline
                     />
-                    <TouchableOpacity 
+                    <TouchableOpacity
                       onPress={handleAddComment}
                       disabled={!commentText.trim()}
                       style={[styles.postButton, !commentText.trim() && styles.disabledButton]}

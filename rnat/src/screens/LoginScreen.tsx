@@ -36,21 +36,20 @@ export default function LoginScreen({ navigation }: any) {
       const res = await authApi.login({ email: email.toLowerCase(), password });
       const { token, userId } = res.data;
 
-      // Fetch profile to get username
-      const userRes = await userApi.getProfile(userId);
-      const userData = userRes.data;
-
+      // Construct a basic user object for immediate login context
       const userObj = {
         _id: userId,
-        username: userData.name || email.split('@')[0],
+        username: email.split('@')[0], // Use email as username initially
         token: token,
       };
 
       await AsyncStorage.setItem('token', token);
       await AsyncStorage.setItem('userId', userId ?? '');
       await AsyncStorage.setItem('user', JSON.stringify(userObj));
-      
-      authContext?.login(token, userObj);
+
+      authContext?.login(token, userObj); // This will update the global Axios client
+      // The full profile fetch will now be handled by AuthContext after login
+
     } catch (e: any) {
       console.error('Login error:', e);
       Alert.alert('Login Failed', e?.response?.data?.message || 'Invalid credentials');

@@ -1,0 +1,9 @@
+user_service  | {"time":"2026-03-21T18:50:10.019749851Z","level":"INFO","msg":"config loaded"}
+user_service  | {"time":"2026-03-21T18:50:10.030783355Z","level":"INFO","msg":"database connected"}
+user_service  | {"time":"2026-03-21T18:50:10.041131482Z","level":"INFO","msg":"database migrations applied"}
+user_service  | {"time":"2026-03-21T18:50:10.041170826Z","level":"INFO","msg":"kafka producer initialized"}
+user_service  | {"time":"2026-03-21T18:50:10.04168949Z","level":"INFO","msg":"users already exist, skipping seeding"}
+user_service  | {"time":"2026-03-21T18:50:10.041745656Z","level":"INFO","msg":"dependencies initialized"}
+user_service  | {"time":"2026-03-21T18:50:10.041835204Z","level":"INFO","msg":"servers are running..."}
+user_service  | {"time":"2026-03-21T18:50:10.041840554Z","level":"INFO","msg":"HTTP server started","port":":8080"}
+user_service  | {"time":"2026-03-21T18:50:10.042090444Z","level":"INFO","msg":"gRPC server started","port":":9090"}

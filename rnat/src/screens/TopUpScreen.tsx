@@ -7,7 +7,7 @@ import {
   StyleSheet,
   Alert,
   ActivityIndicator,
-  StatusBar
+  StatusBar,
 } from 'react-native';
 import { walletApi } from '../api/services';
 import { Colors, Typography, Spacing, BorderRadius } from '../theme/theme';

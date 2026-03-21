@@ -71,6 +71,20 @@ func (r *Repository) FindByID(ctx context.Context, id string) (*models.User, err
 	return &user, nil
 }
 
+func (r *Repository) FindAll(ctx context.Context) ([]*models.User, error) {
+	var users []*models.User
+	cursor, err := r.db.Collection(usersCollection).Find(ctx, bson.M{"deletedAt": bson.M{"$exists": false}})
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(ctx)
+
+	if err := cursor.All(ctx, &users); err != nil {
+		return nil, err
+	}
+	return users, nil
+}
+
 func (r *Repository) Update(ctx context.Context, user *models.User) error {
 	objectID, err := primitive.ObjectIDFromHex(user.ID)
 	if err != nil {

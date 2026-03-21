@@ -3,21 +3,22 @@ import { RouteProp } from '@react-navigation/native';
 
 
 export type Beat = {
-  _id: string;
-  imageUrl: string | null;
-  audioUrl: string | null;  
+  id: string; // Changed from _id to id to match backend
   title: string;
-  author: string;
+  genre: string;
+  bpm: number;
   price: number;
   description: string;
   tags: string[];
-  user: {
-    _id: string;
-    username: string;
-  };
-  createdAt: string;
+  author_id: string;
+  author_name: string;
+  author_avatar?: string; // Optional, as it might not always be present
+  image_url?: string; // Renamed from imageUrl to image_url
+  audio_url?: string; // Renamed from audioUrl to audio_url
+  rating?: number | null; // Keep existing rating and averageRating
   averageRating?: number | null;
   ratingsCount?: number | null;
+  createdAt: string;
 };
 
 
@@ -30,7 +31,7 @@ export type RootStackParamList = {
   AddBeat: undefined;
   BeatDetails: { beat: Beat };
   UserProfile: { username: string };
-  
+
 };
 
 

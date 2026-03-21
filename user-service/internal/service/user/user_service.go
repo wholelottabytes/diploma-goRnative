@@ -2,7 +2,6 @@ package userservice
 
 import (
 	"context"
-	"fmt"
 	"log/slog"
 	"strings"
 	"time"
@@ -19,6 +18,7 @@ type UserRepository interface {
 	Create(ctx context.Context, user *models.User) (string, error)
 	FindByEmail(ctx context.Context, email string) (*models.User, error)
 	FindByID(ctx context.Context, id string) (*models.User, error)
+	FindAll(ctx context.Context) ([]*models.User, error)
 	Update(ctx context.Context, user *models.User) error
 	Delete(ctx context.Context, id string) error
 }
@@ -46,30 +46,32 @@ type UserService struct {
 	hasher        hash.Hasher
 	producer      Producer
 	walletService WalletService
+	jwtSecret     string
 }
 
-func NewUserService(repo UserRepository, hasher hash.Hasher, producer Producer, walletService WalletService) *UserService {
+func NewUserService(repo UserRepository, hasher hash.Hasher, producer Producer, walletService WalletService, jwtSecret string) *UserService {
 	return &UserService{
 		repo:          repo,
 		hasher:        hasher,
 		producer:      producer,
 		walletService: walletService,
+		jwtSecret:     jwtSecret,
 	}
 }
 
-func (s *UserService) Register(ctx context.Context, input RegisterUserInput) (*models.User, error) {
+func (s *UserService) Register(ctx context.Context, input RegisterUserInput) (*models.User, string, error) {
 	slog.Info("processing user registration", slog.String("email", input.Email))
 	input.Email = strings.ToLower(input.Email)
 
 	if err := validate.ValidateCredentials(input.Email, input.Phone, input.Password); err != nil {
 		slog.Warn("user registration validation failed", slog.String("email", input.Email), slog.String("error", err.Error()))
-		return nil, fmt.Errorf("validation failed: %w", err)
+		return nil, "", err
 	}
 
 	// Validate and build roles — every user gets the base "user" role
 	validRoles := map[string]bool{"user": true, "buyer": true, "seller": true, "admin": true}
 	if input.Role != "" && !validRoles[input.Role] {
-		return nil, apperrors.ErrInvalidRole
+		return nil, "", apperrors.ErrInvalidRole
 	}
 	roles := []string{"user"}
 	if input.Role != "" && input.Role != "user" {
@@ -78,15 +80,15 @@ func (s *UserService) Register(ctx context.Context, input RegisterUserInput) (*m
 
 	existing, err := s.repo.FindByEmail(ctx, input.Email)
 	if err != nil {
-		return nil, err
+		return nil, "", err
 	}
 	if existing != nil {
-		return nil, apperrors.ErrUserExists
+		return nil, "", apperrors.ErrUserExists
 	}
 
 	passwordHash, err := s.hasher.HashPassword(input.Password)
 	if err != nil {
-		return nil, err
+		return nil, "", err
 	}
 
 	user := &models.User{
@@ -101,13 +103,19 @@ func (s *UserService) Register(ctx context.Context, input RegisterUserInput) (*m
 	userID, err := s.repo.Create(ctx, user)
 	if err != nil {
 		slog.Error("failed to create user in repository", slog.String("email", user.Email), slog.String("error", err.Error()))
-		return nil, err
+		return nil, "", err
 	}
 	user.ID = userID
 
 	if err := s.walletService.CreateWallet(ctx, user.ID); err != nil {
 		slog.Error("failed to create wallet for user", slog.String("error", err.Error()), slog.String("userID", user.ID))
-		return nil, apperrors.ErrWalletCreation
+		return nil, "", apperrors.ErrWalletCreation
+	}
+
+	token, err := s.issueToken(user.ID, user.Roles)
+	if err != nil {
+		slog.Error("failed to issue token for registered user", slog.String("userID", user.ID), slog.String("error", err.Error()))
+		return nil, "", err
 	}
 
 	slog.Info("user created successfully, publishing event", slog.String("userID", user.ID))
@@ -131,7 +139,7 @@ func (s *UserService) Register(ctx context.Context, input RegisterUserInput) (*m
 		}
 	}()
 
-	return user, nil
+	return user, token, nil
 }
 
 func (s *UserService) VerifyCredentials(ctx context.Context, email, password string) (string, []string, error) {
@@ -139,13 +147,16 @@ func (s *UserService) VerifyCredentials(ctx context.Context, email, password str
 
 	user, err := s.repo.FindByEmail(ctx, email)
 	if err != nil {
+		slog.Error("error finding user by email", slog.String("email", email), slog.String("error", err.Error()))
 		return "", nil, err
 	}
 	if user == nil {
+		slog.Warn("user not found during verification", slog.String("email", email))
 		return "", nil, apperrors.ErrInvalidCredentials
 	}
 
 	if !s.hasher.CheckPasswordHash(password, user.PasswordHash) {
+		slog.Warn("password hash mismatch", slog.String("email", email))
 		return "", nil, apperrors.ErrInvalidCredentials
 	}
 

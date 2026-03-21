@@ -15,8 +15,32 @@ import {
 import LinearGradient from 'react-native-linear-gradient';
 import { AuthContext } from '../context/AuthContext';
 import { Colors, Typography, Spacing, BorderRadius } from '../theme/theme';
-import { authApi } from '../api/services';
+import { authApi, userApi } from '../api/services';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+
+// Moved RoleButton outside RegisterScreen to prevent react/no-unstable-nested-components warning
+interface RoleButtonProps {
+  value: 'user' | 'artist';
+  label: string;
+  role: 'user' | 'artist';
+  onPress: (value: 'user' | 'artist') => void;
+}
+
+const RoleButton: React.FC<RoleButtonProps> = ({ value, label, role, onPress }) => (
+  <TouchableOpacity
+    onPress={() => onPress(value)}
+    style={[styles.roleBtn, role === value && styles.roleBtnActive]}>
+    {role === value ? (
+      <LinearGradient colors={['#A855F7', '#7C3AED']} style={styles.roleBtnInner}>
+        <Text style={[styles.roleBtnText, { color: Colors.white }]}>{label}</Text>
+      </LinearGradient>
+    ) : (
+      <View style={styles.roleBtnInner}>
+        <Text style={styles.roleBtnText}>{label}</Text>
+      </View>
+    )}
+  </TouchableOpacity>
+);
 
 export default function RegisterScreen({ navigation }: any) {
   const [name, setName] = useState('');
@@ -41,42 +65,30 @@ export default function RegisterScreen({ navigation }: any) {
         password,
         role,
       });
-      const { token, userId } = res.data;
-      
+      const { id, token } = res.data;
+
       const userObj = {
-        _id: userId,
+        _id: id,
         username: name,
         token: token,
       };
 
       await AsyncStorage.setItem('token', token);
-      await AsyncStorage.setItem('userId', userId ?? '');
+      await AsyncStorage.setItem('userId', id ?? '');
       await AsyncStorage.setItem('user', JSON.stringify(userObj));
-      
+
       authContext?.login(token, userObj);
     } catch (e: any) {
       console.error(e);
-      Alert.alert('Registration Failed', e?.response?.data?.message || 'Something went wrong');
+      if (e.response && e.response.status === 409) {
+        Alert.alert('Registration Failed', 'An account with this email already exists.');
+      } else {
+        Alert.alert('Registration Failed', e?.response?.data?.error || 'Something went wrong');
+      }
     } finally {
       setLoading(false);
     }
   };
-
-  const RoleButton = ({ value, label }: { value: 'user' | 'artist'; label: string }) => (
-    <TouchableOpacity
-      onPress={() => setRole(value)}
-      style={[styles.roleBtn, role === value && styles.roleBtnActive]}>
-      {role === value ? (
-        <LinearGradient colors={['#A855F7', '#7C3AED']} style={styles.roleBtnInner}>
-          <Text style={[styles.roleBtnText, { color: Colors.white }]}>{label}</Text>
-        </LinearGradient>
-      ) : (
-        <View style={styles.roleBtnInner}>
-          <Text style={styles.roleBtnText}>{label}</Text>
-        </View>
-      )}
-    </TouchableOpacity>
-  );
 
   return (
     <LinearGradient colors={['#0A0A0F', '#12121A', '#0A0A0F']} style={styles.gradient}>
@@ -150,8 +162,8 @@ export default function RegisterScreen({ navigation }: any) {
             <View style={styles.inputGroup}>
               <Text style={styles.label}>I am a...</Text>
               <View style={styles.roleRow}>
-                <RoleButton value="user" label="🎧 Listener" />
-                <RoleButton value="artist" label="🎤 Artist" />
+                <RoleButton value="user" label="🎧 Listener" role={role} onPress={setRole} />
+                <RoleButton value="artist" label="🎤 Artist" role={role} onPress={setRole} />
               </View>
             </View>
 

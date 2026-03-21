@@ -1,0 +1,148 @@
+
+> rnat@0.0.1 start
+> react-native start --verbose
+
+
+Welcome to React Native v0.78
+Starting dev server on http://localhost:8081
+
+
+                        ▒▒▓▓▓▓▒▒
+                     ▒▓▓▓▒▒░░▒▒▓▓▓▒
+                  ▒▓▓▓▓░░░▒▒▒▒░░░▓▓▓▓▒
+                 ▓▓▒▒▒▓▓▓▓▓▓▓▓▓▓▓▓▒▒▒▓▓
+                 ▓▓░░░░░▒▓▓▓▓▓▓▒░░░░░▓▓
+                 ▓▓░░▓▓▒░░░▒▒░░░▒▓▒░░▓▓
+                 ▓▓░░▓▓▓▓▓▒▒▒▒▓▓▓▓▒░░▓▓
+                 ▓▓░░▓▓▓▓▓▓▓▓▓▓▓▓▓▒░░▓▓
+                 ▓▓▒░░▒▒▓▓▓▓▓▓▓▓▒░░░▒▓▓
+                  ▒▓▓▓▒░░░▒▓▓▒░░░▒▓▓▓▒
+                     ▒▓▓▓▒░░░░▒▓▓▓▒
+                        ▒▒▓▓▓▓▒▒
+
+
+                Welcome to Metro v0.81.5
+              Fast - Scalable - Integrated
+
+
+ INFO  
+[7m [1m💡 JavaScript logs have moved![22m They can now be viewed in React Native DevTools. Tip: Type [1mj[22m in the terminal to open (requires Google Chrome or Microsoft Edge).[27m
+
+ INFO  Dev server ready. Press Ctrl+C to exit.
+ INFO  Key commands available:
+
+   r  - reload app(s)
+   d  - open Dev Menu
+   j  - open DevTools
+
+ BUNDLE  ./index.js 
+
+ BUNDLE  ./index.js 
+
+ BUNDLE  ./index.js 
+
+ BUNDLE  ./index.js 
+
+ BUNDLE  ./index.js 
+
+ BUNDLE  ./index.js 
+
+ BUNDLE  ./index.js 
+
+ BUNDLE  ./index.js 
+
+ BUNDLE  ./index.js 
+
+ BUNDLE  ./index.js 
+
+ BUNDLE  ./index.js 
+
+ BUNDLE  ./index.js 
+
+ BUNDLE  ./index.js 
+
+ BUNDLE  ./index.js 
+
+ ERROR  SyntaxError: /home/bns/diploma-goRnative/rnat/src/screens/RegisterScreen.tsx: Adjacent JSX elements must be wrapped in an enclosing tag. Did you want a JSX fragment <>...</>? (148:6)
+
+  146 |           </View>
+  147 |         </ScrollView>
+> 148 |       </KeyboardAvoidingView>
+      |       ^
+  149 |     </LinearGradient>
+  150 |   );
+  151 | }
+ ERROR  SyntaxError: /home/bns/diploma-goRnative/rnat/src/screens/RegisterScreen.tsx: Adjacent JSX elements must be wrapped in an enclosing tag. Did you want a JSX fragment <>...</>? (148:6)
+
+  146 |           </View>
+  147 |         </ScrollView>
+> 148 |       </KeyboardAvoidingView>
+      |       ^
+  149 |     </LinearGradient>
+  150 |   );
+  151 | }
+ BUNDLE  ./index.js 
+
+ ERROR  SyntaxError: /home/bns/diploma-goRnative/rnat/src/screens/BeatDetailsScreen.tsx: 'return' outside of function. (259:2)
+
+  257 |   const isAdmin = user?.username === 'admin0';
+  258 |
+> 259 |   return (
+      |   ^
+  260 |     <LinearGradient
+  261 |       colors={['#1a1a1a', '#2a2a2a']}
+  262 |       style={styles.container}
+SyntaxError: /home/bns/diploma-goRnative/rnat/src/screens/BeatDetailsScreen.tsx: 'return' outside of function. (259:2)
+
+[0m [90m 257 |[39m   [36mconst[39m isAdmin [33m=[39m user[33m?[39m[33m.[39musername [33m===[39m [32m'admin0'[39m[33m;[39m
+ [90m 258 |[39m
+[31m[1m>[22m[39m[90m 259 |[39m   [36mreturn[39m (
+ [90m     |[39m   [31m[1m^[22m[39m
+ [90m 260 |[39m     [33m<[39m[33mLinearGradient[39m
+ [90m 261 |[39m       colors[33m=[39m{[[32m'#1a1a1a'[39m[33m,[39m [32m'#2a2a2a'[39m]}
+ [90m 262 |[39m       style[33m=[39m{styles[33m.[39mcontainer}[0m
+    at constructor (/home/bns/diploma-goRnative/rnat/node_modules/@babel/parser/lib/index.js:365:19)
+    at TypeScriptParserMixin.raise (/home/bns/diploma-goRnative/rnat/node_modules/@babel/parser/lib/index.js:6599:19)
+    at TypeScriptParserMixin.parseReturnStatement (/home/bns/diploma-goRnative/rnat/node_modules/@babel/parser/lib/index.js:13136:12)
+    at TypeScriptParserMixin.parseStatementContent (/home/bns/diploma-goRnative/rnat/node_modules/@babel/parser/lib/index.js:12798:21)
+    at TypeScriptParserMixin.parseStatementContent (/home/bns/diploma-goRnative/rnat/node_modules/@babel/parser/lib/index.js:9508:18)
+    at TypeScriptParserMixin.parseStatementLike (/home/bns/diploma-goRnative/rnat/node_modules/@babel/parser/lib/index.js:12767:17)
+    at TypeScriptParserMixin.parseModuleItem (/home/bns/diploma-goRnative/rnat/node_modules/@babel/parser/lib/index.js:12744:17)
+    at TypeScriptParserMixin.parseBlockOrModuleBlockBody (/home/bns/diploma-goRnative/rnat/node_modules/@babel/parser/lib/index.js:13316:36)
+    at TypeScriptParserMixin.parseBlockBody (/home/bns/diploma-goRnative/rnat/node_modules/@babel/parser/lib/index.js:13309:10)
+    at TypeScriptParserMixin.parseProgram (/home/bns/diploma-goRnative/rnat/node_modules/@babel/parser/lib/index.js:12622:10)
+    at TypeScriptParserMixin.parseTopLevel (/home/bns/diploma-goRnative/rnat/node_modules/@babel/parser/lib/index.js:12612:25)
+    at TypeScriptParserMixin.parse (/home/bns/diploma-goRnative/rnat/node_modules/@babel/parser/lib/index.js:14488:25)
+    at TypeScriptParserMixin.parse (/home/bns/diploma-goRnative/rnat/node_modules/@babel/parser/lib/index.js:10126:18)
+    at parse (/home/bns/diploma-goRnative/rnat/node_modules/@babel/parser/lib/index.js:14501:26)
+    at parser (/home/bns/diploma-goRnative/rnat/node_modules/@babel/core/lib/parser/index.js:41:34)
+    at parser.next (<anonymous>)
+    at parse (/home/bns/diploma-goRnative/rnat/node_modules/@babel/core/lib/parse.js:25:37)
+    at parse.next (<anonymous>)
+    at evaluateSync (/home/bns/diploma-goRnative/rnat/node_modules/gensync/index.js:251:28)
+    at sync (/home/bns/diploma-goRnative/rnat/node_modules/gensync/index.js:89:14)
+    at stopHiding - secret - don't use this - v1 (/home/bns/diploma-goRnative/rnat/node_modules/@babel/core/lib/errors/rewrite-stack-trace.js:47:12)
+    at parseSync (/home/bns/diploma-goRnative/rnat/node_modules/@babel/core/lib/parse.js:38:72)
+    at Object.transform (/home/bns/diploma-goRnative/rnat/node_modules/@react-native/metro-babel-transformer/src/index.js:209:11)
+    at transformJSWithBabel (/home/bns/diploma-goRnative/rnat/node_modules/metro-transform-worker/src/index.js:308:45)
+    at Object.transform (/home/bns/diploma-goRnative/rnat/node_modules/metro-transform-worker/src/index.js:438:18)
+    at transformFile (/home/bns/diploma-goRnative/rnat/node_modules/metro/src/DeltaBundler/Worker.flow.js:54:36)
+    at Object.transform (/home/bns/diploma-goRnative/rnat/node_modules/metro/src/DeltaBundler/Worker.flow.js:30:10)
+    at execFunction (/home/bns/diploma-goRnative/rnat/node_modules/jest-worker/build/workers/processChild.js:149:17)
+    at execHelper (/home/bns/diploma-goRnative/rnat/node_modules/jest-worker/build/workers/processChild.js:137:5)
+    at execMethod (/home/bns/diploma-goRnative/rnat/node_modules/jest-worker/build/workers/processChild.js:140:5)
+    at process.messageListener (/home/bns/diploma-goRnative/rnat/node_modules/jest-worker/build/workers/processChild.js:44:7)
+    at process.emit (node:events:508:28)
+    at emit (node:internal/child_process:933:14)
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)
+ BUNDLE  ./index.js 
+
+ ERROR  SyntaxError: /home/bns/diploma-goRnative/rnat/src/screens/BeatDetailsScreen.tsx: 'return' outside of function. (259:2)
+
+  257 |   const isAdmin = user?.username === 'admin0';
+  258 |
+> 259 |   return (
+      |   ^
+  260 |     <LinearGradient
+  261 |       colors={['#1a1a1a', '#2a2a2a']}
+  262 |       style={styles.container}

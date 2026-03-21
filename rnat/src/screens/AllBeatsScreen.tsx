@@ -58,11 +58,11 @@ export default function AllBeatsScreen({ navigation }: any) {
 
   useEffect(() => {
     let result = beats;
-    if (genre !== 'All') result = result.filter(b => b.genre === genre);
-    if (search.trim()) result = result.filter(b =>
+    if (genre !== 'All') {result = result.filter(b => b.genre === genre);}
+    if (search.trim()) {result = result.filter(b =>
       b.title.toLowerCase().includes(search.toLowerCase()) ||
       b.artistName.toLowerCase().includes(search.toLowerCase())
-    );
+    );}
     setFiltered(result);
   }, [beats, genre, search]);
 

@@ -24,7 +24,7 @@ func (h *Handler) RegisterWithServer(server *grpc.Server) {
 }
 
 func (h *Handler) Register(ctx context.Context, req *userv1.RegisterRequest) (*userv1.RegisterResponse, error) {
-	user, err := h.userService.Register(ctx, userservice.RegisterUserInput{
+	user, _, err := h.userService.Register(ctx, userservice.RegisterUserInput{
 		Name:     req.Name,
 		Email:    req.Email,
 		Phone:    req.Phone,

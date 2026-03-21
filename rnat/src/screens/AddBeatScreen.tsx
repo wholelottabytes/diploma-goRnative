@@ -213,9 +213,9 @@ const AddBeatScreen: React.FC<any> = ({ navigation }) => {
         style={styles.input}
         mode="outlined"
       />
-<ScrollView 
-  horizontal 
-  showsHorizontalScrollIndicator={false} 
+<ScrollView
+  horizontal
+  showsHorizontalScrollIndicator={false}
   contentContainerStyle={styles.tagsContainer}
 >
   {tags.split(',').map((tag, index) => (

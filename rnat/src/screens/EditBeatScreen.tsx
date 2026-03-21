@@ -99,7 +99,7 @@ const EditBeatScreen: React.FC<any> = () => {
     body: JSON.stringify({ imageUrl: oldImageUrl }),
   });
 
-  const deleteText = await deleteRes.text(); 
+  const deleteText = await deleteRes.text();
   console.log('Delete response:', deleteText);
 
   if (!deleteRes.ok) {
@@ -197,9 +197,9 @@ const EditBeatScreen: React.FC<any> = () => {
         ))}
       </View>
 
-      <Button 
-        onPress={handleImagePicker} 
-        mode="contained" 
+      <Button
+        onPress={handleImagePicker}
+        mode="contained"
         style={styles.button}
       >
         {imageFile ? 'Change Image' : 'Select New Image'}
@@ -223,18 +223,18 @@ const EditBeatScreen: React.FC<any> = () => {
         />
       )}
 
-      <Button 
-        onPress={handleUpdate} 
-        mode="contained" 
+      <Button
+        onPress={handleUpdate}
+        mode="contained"
         style={styles.button}
         loading={loading}
       >
         Save Changes
       </Button>
 
-      <Button 
-        onPress={handleDelete} 
-        mode="contained" 
+      <Button
+        onPress={handleDelete}
+        mode="contained"
         style={styles.deleteButton}
       >
         Delete Beat
@@ -244,28 +244,28 @@ const EditBeatScreen: React.FC<any> = () => {
 };
 
 const styles = StyleSheet.create({
-  container: { 
-    flexGrow: 1, 
-    padding: 20, 
-    backgroundColor: '#fff' 
+  container: {
+    flexGrow: 1,
+    padding: 20,
+    backgroundColor: '#fff',
   },
-  title: { 
-    textAlign: 'center', 
-    marginBottom: 20, 
-    fontSize: 24, 
-    color: 'black' 
+  title: {
+    textAlign: 'center',
+    marginBottom: 20,
+    fontSize: 24,
+    color: 'black',
   },
-  input: { 
-    marginBottom: 15, 
-    backgroundColor: '#fff' 
+  input: {
+    marginBottom: 15,
+    backgroundColor: '#fff',
   },
-  button: { 
-    marginTop: 20, 
-    backgroundColor: '#000' 
+  button: {
+    marginTop: 20,
+    backgroundColor: '#000',
   },
-  deleteButton: { 
-    marginTop: 10, 
-    backgroundColor: '#d32f2f' 
+  deleteButton: {
+    marginTop: 10,
+    backgroundColor: '#d32f2f',
   },
   tagsContainer: {
     flexDirection: 'row',
