@@ -1,0 +1,56 @@
+
+> rnat@0.0.1 lint
+> eslint .
+
+
+/home/bns/diploma-goRnative/rnat/src/App.tsx
+  27:18  warning  Inline style: { alignItems: 'center' }                        react-native/no-inline-styles
+  28:20  warning  Inline style: { fontSize: 20, opacity: 'focused ? 1 : 0.5' }  react-native/no-inline-styles
+  89:36  warning  Inline style: { flex: 1 }                                     react-native/no-inline-styles
+
+/home/bns/diploma-goRnative/rnat/src/context/AuthContext.tsx
+  108:11  error  The 'logout' function makes the dependencies of useEffect Hook (at line 93) change on every render. To fix this, wrap the definition of 'logout' in its own useCallback() Hook  react-hooks/exhaustive-deps
+
+/home/bns/diploma-goRnative/rnat/src/screens/AllBeatsScreen.tsx
+  25:24  warning  Inline style: { fontSize: 20 }  react-native/no-inline-styles
+
+/home/bns/diploma-goRnative/rnat/src/screens/BeatDetailsScreen.tsx
+   18:10  error    'Star' is defined but never used                                                                                            @typescript-eslint/no-unused-vars
+   20:10  error    'Beat' is defined but never used                                                                                            @typescript-eslint/no-unused-vars
+   23:10  error    'Colors' is defined but never used                                                                                          @typescript-eslint/no-unused-vars
+  281:18  warning  Inline style: { width: 0, height: 0 }                                                                                       react-native/no-inline-styles
+  291:15  warning  Inline style: { opacity: 'isArtworkLoaded ? 1 : 0' }                                                                        react-native/no-inline-styles
+  309:26  warning  Inline style: {
+  flexDirection: 'row',
+  alignItems: 'center',
+  justifyContent: 'center',
+  gap: 8,
+  marginBottom: 20
+}  react-native/no-inline-styles
+  310:89  warning  Inline style: { width: 24, height: 24, borderRadius: 12 }                                                                   react-native/no-inline-styles
+  332:18  error    'AnimatedStar' is not defined                                                                                               react/jsx-no-undef
+
+/home/bns/diploma-goRnative/rnat/src/screens/HomeScreen.tsx
+   20:9   error  'width' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  142:12  error  'Search' is not defined                     react/jsx-no-undef
+
+/home/bns/diploma-goRnative/rnat/src/screens/LikedBeatsScreen.tsx
+  61:34  warning  Inline style: { fontSize: 22 }  react-native/no-inline-styles
+
+/home/bns/diploma-goRnative/rnat/src/screens/LoginScreen.tsx
+  18:19  error  'userApi' is defined but never used          @typescript-eslint/no-unused-vars
+  21:9   error  'height' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/home/bns/diploma-goRnative/rnat/src/screens/MyBeatsScreen.tsx
+  26:26  warning  Inline style: { fontSize: 22 }  react-native/no-inline-styles
+
+/home/bns/diploma-goRnative/rnat/src/screens/ProfileScreen.tsx
+  19:10  error  'User' is defined but never used      @typescript-eslint/no-unused-vars
+  19:16  error  'Settings' is defined but never used  @typescript-eslint/no-unused-vars
+
+/home/bns/diploma-goRnative/rnat/src/screens/RegisterScreen.tsx
+  18:10  error    'authApi' is defined but never used  @typescript-eslint/no-unused-vars
+  96:92  warning  Inline style: { flex: 1 }            react-native/no-inline-styles
+
+✖ 23 problems (12 errors, 11 warnings)
+

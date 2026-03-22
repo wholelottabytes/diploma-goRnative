@@ -236,4 +236,3 @@ func (r *BeatRepository) FindByIDs(ctx context.Context, ids []string) ([]*models
 
 	return beats, nil
 }
-

@@ -1,13 +1,13 @@
 package main
 
 import (
+	clickhouse "github.com/ClickHouse/clickhouse-go/v2"
 	"context"
 	"log/slog"
 	"os"
 	"os/signal"
 	"syscall"
 
-	"github.com/ClickHouse/clickhouse-go/v2"
 	"github.com/bns/analytics-service/configs"
 	"github.com/bns/analytics-service/internal/app"
 	clickhouserepo "github.com/bns/analytics-service/internal/repository/clickhouse"

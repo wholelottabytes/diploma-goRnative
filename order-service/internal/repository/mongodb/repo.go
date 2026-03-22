@@ -47,7 +47,7 @@ func (r *OrderRepository) GetByID(ctx context.Context, id string) (*models.Order
 }
 
 func (r *OrderRepository) GetByUserID(ctx context.Context, userID string) ([]*models.Order, error) {
-	cursor, err := r.db.Collection(ordersCollection).Find(ctx, bson.M{"user_id": userID}, options.Find().SetSort(bson.D{{Key: "created_at", Value: -1}}))
+	cursor, err := r.db.Collection(ordersCollection).Find(ctx, bson.M{"user_id": userID}, options.Find().SetSort(bson.D{bson.E{Key: "created_at", Value: -1}}))
 	if err != nil {
 		return nil, err
 	}

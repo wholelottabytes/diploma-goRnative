@@ -1,0 +1,28 @@
+--- analytics-service ---
+internal/repository/clickhouse/repo.go:11:7: undefined: clickhouse (typecheck)
+	conn clickhouse.Conn
+	     ^
+internal/repository/clickhouse/repo.go:14:15: undefined: clickhouse (typecheck)
+func New(conn clickhouse.Conn) *AnalyticsRepository {
+              ^
+cmd/app/main.go:35:15: undefined: clickhouse (typecheck)
+	conn, err := clickhouse.Open(&clickhouse.Options{
+	             ^
+--- api ---
+--- auth-service ---
+internal/service/auth/service.go:89:80: undefined: jwt (typecheck)
+func (s *AuthService) ValidateToken(ctx context.Context, tokenString string) (*jwt.Token, error) {
+                                                                               ^
+internal/service/auth/service.go:90:16: undefined: jwt (typecheck)
+	token, err := jwt.Parse(tokenString, func(t *jwt.Token) (interface{}, error) {
+	              ^
+internal/service/auth/service.go:92:16: undefined: jwt (typecheck)
+			return nil, jwt.ErrSignatureInvalid
+			            ^
+internal/repository/redis/repo.go:11:10: undefined: redis (typecheck)
+	client *redis.Client
+	        ^
+internal/repository/redis/repo.go:14:18: undefined: redis (typecheck)
+func New(client *redis.Client) *AuthRepository {
+                 ^
+--- beat-service ---

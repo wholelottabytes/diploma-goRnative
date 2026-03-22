@@ -3,10 +3,9 @@ package seeder
 import (
 	"context"
 	"log/slog"
-	"time"
 
-	beatservice "github.com/bns/beat-service/internal/service/beat"
 	"github.com/bns/beat-service/internal/models"
+	beatservice "github.com/bns/beat-service/internal/service/beat"
 )
 
 func SeedData(beatService *beatservice.BeatService, beatRepo beatservice.BeatRepository, userID string) {

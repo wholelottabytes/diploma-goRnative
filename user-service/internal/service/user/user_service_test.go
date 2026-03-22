@@ -22,7 +22,7 @@ func TestUserService_Register(t *testing.T) {
 	mockHasher := mocks.NewMockHasher(ctrl)
 	mockProducer := mocks.NewMockProducer(ctrl)
 	mockWallet := mocks.NewMockWalletService(ctrl)
-	userService := userservice.NewUserService(mockRepo, mockHasher, mockProducer, mockWallet)
+	userService := userservice.NewUserService(mockRepo, mockHasher, mockProducer, mockWallet, "secret")
 	publishCalled := make(chan bool, 1)
 
 	testCases := []struct {
@@ -125,7 +125,7 @@ func TestUserService_Register(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			tc.setupMocks()
-			user, err := userService.Register(context.Background(), tc.input)
+			user, _, err := userService.Register(context.Background(), tc.input)
 			if tc.waitForGo {
 				select {
 				case <-publishCalled:

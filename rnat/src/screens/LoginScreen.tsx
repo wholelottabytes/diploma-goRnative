@@ -9,16 +9,13 @@ import {
   KeyboardAvoidingView,
   Platform,
   Alert,
-  Dimensions,
   StatusBar,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { AuthContext } from '../context/AuthContext';
 import { Colors, Typography, Spacing, BorderRadius } from '../theme/theme';
-import { authApi, userApi } from '../api/services';
+import { authApi } from '../api/services';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
-const { height } = Dimensions.get('window');
 
 export default function LoginScreen({ navigation }: any) {
   const [email, setEmail] = useState('');

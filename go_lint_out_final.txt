@@ -1,0 +1,13 @@
+--- analytics-service ---
+--- api ---
+--- auth-service ---
+internal/service/auth/service.go:89:80: undefined: jwt (typecheck)
+func (s *AuthService) ValidateToken(ctx context.Context, tokenString string) (*jwt.Token, error) {
+                                                                               ^
+internal/service/auth/service.go:90:16: undefined: jwt (typecheck)
+	token, err := jwt.Parse(tokenString, func(t *jwt.Token) (interface{}, error) {
+	              ^
+internal/service/auth/service.go:92:16: undefined: jwt (typecheck)
+			return nil, jwt.ErrSignatureInvalid
+			            ^
+--- beat-service ---

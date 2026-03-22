@@ -16,7 +16,7 @@ import { AuthContext } from '../context/AuthContext';
 import { Colors, Typography, Spacing, BorderRadius } from '../theme/theme';
 import { userApi, walletApi } from '../api/services';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { User, Settings, LogOut, Music, Heart, Star, CreditCard } from 'react-native-feather';
+import { LogOut, Music, Heart, Star, CreditCard } from 'react-native-feather';
 
 interface UserProfile {
   id: string;

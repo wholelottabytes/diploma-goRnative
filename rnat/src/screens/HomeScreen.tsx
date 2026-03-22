@@ -15,6 +15,7 @@ import {
 import LinearGradient from 'react-native-linear-gradient';
 import { AuthContext } from '../context/AuthContext';
 import { Colors, Typography, Spacing, BorderRadius } from '../theme/theme';
+import { Search } from 'react-native-feather';
 import { beatApi } from '../api/services';
 
 const { width } = Dimensions.get('window');

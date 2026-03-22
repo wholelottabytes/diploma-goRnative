@@ -1,10 +1,10 @@
 package clickhouse
 
 import (
+	clickhouse "github.com/ClickHouse/clickhouse-go/v2"
 	"context"
 	"time"
 
-	"github.com/ClickHouse/clickhouse-go/v2"
 )
 
 type AnalyticsRepository struct {

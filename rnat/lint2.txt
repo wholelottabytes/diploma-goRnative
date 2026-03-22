@@ -1,0 +1,36 @@
+
+/home/bns/diploma-goRnative/rnat/src/App.tsx
+  27:18  warning  Inline style: { alignItems: 'center' }                        react-native/no-inline-styles
+  28:20  warning  Inline style: { fontSize: 20, opacity: 'focused ? 1 : 0.5' }  react-native/no-inline-styles
+  89:36  warning  Inline style: { flex: 1 }                                     react-native/no-inline-styles
+
+/home/bns/diploma-goRnative/rnat/src/screens/AllBeatsScreen.tsx
+  25:24  warning  Inline style: { fontSize: 20 }  react-native/no-inline-styles
+
+/home/bns/diploma-goRnative/rnat/src/screens/BeatDetailsScreen.tsx
+   20:10  error    'Beat' is defined but never used                                                                                            @typescript-eslint/no-unused-vars
+  288:18  warning  Inline style: { width: 0, height: 0 }                                                                                       react-native/no-inline-styles
+  298:15  warning  Inline style: { opacity: 'isArtworkLoaded ? 1 : 0' }                                                                        react-native/no-inline-styles
+  316:26  warning  Inline style: {
+  flexDirection: 'row',
+  alignItems: 'center',
+  justifyContent: 'center',
+  gap: 8,
+  marginBottom: 20
+}  react-native/no-inline-styles
+  317:89  warning  Inline style: { width: 24, height: 24, borderRadius: 12 }                                                                   react-native/no-inline-styles
+
+/home/bns/diploma-goRnative/rnat/src/screens/HomeScreen.tsx
+  21:9  error  'width' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/home/bns/diploma-goRnative/rnat/src/screens/LikedBeatsScreen.tsx
+  61:34  warning  Inline style: { fontSize: 22 }  react-native/no-inline-styles
+
+/home/bns/diploma-goRnative/rnat/src/screens/MyBeatsScreen.tsx
+  26:26  warning  Inline style: { fontSize: 22 }  react-native/no-inline-styles
+
+/home/bns/diploma-goRnative/rnat/src/screens/RegisterScreen.tsx
+  96:92  warning  Inline style: { flex: 1 }  react-native/no-inline-styles
+
+✖ 13 problems (2 errors, 11 warnings)
+

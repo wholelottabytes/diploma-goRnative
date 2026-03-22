@@ -71,7 +71,7 @@ func (r *InteractionRepository) GetUserRating(ctx context.Context, beatID, userI
 
 func (r *InteractionRepository) GetCommentsByBeatID(ctx context.Context, beatID string, page, limit int64) ([]*models.Comment, error) {
 	opts := options.Find().
-		SetSort(bson.D{{Key: "created_at", Value: -1}}).
+		SetSort(bson.D{bson.E{Key: "created_at", Value: -1}}).
 		SetSkip((page - 1) * limit).
 		SetLimit(limit)
 
@@ -90,8 +90,8 @@ func (r *InteractionRepository) GetCommentsByBeatID(ctx context.Context, beatID 
 
 func (r *InteractionRepository) GetAverageRatingByBeatID(ctx context.Context, beatID string) (float64, int64, error) {
 	pipeline := mongo.Pipeline{
-		{{Key: "$match", Value: bson.M{"beat_id": beatID}}},
-		{{Key: "$group", Value: bson.M{
+		bson.D{bson.E{Key: "$match", Value: bson.M{"beat_id": beatID}}},
+		bson.D{bson.E{Key: "$group", Value: bson.M{
 			"_id":       nil,
 			"avgRating": bson.M{"$avg": "$value"},
 			"count":     bson.M{"$sum": 1},

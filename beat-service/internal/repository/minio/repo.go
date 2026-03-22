@@ -51,4 +51,3 @@ func (r *FileRepository) GetURL(ctx context.Context, bucketName, objectName stri
 	}
 	return presignedURL.String(), nil
 }
-

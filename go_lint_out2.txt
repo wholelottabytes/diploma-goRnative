@@ -1,0 +1,122 @@
+--- analytics-service ---
+internal/repository/clickhouse/repo.go:11:7: undefined: clickhouse (typecheck)
+	conn clickhouse.Conn
+	     ^
+internal/repository/clickhouse/repo.go:14:15: undefined: clickhouse (typecheck)
+func New(conn clickhouse.Conn) *AnalyticsRepository {
+              ^
+cmd/app/main.go:35:15: undefined: clickhouse (typecheck)
+	conn, err := clickhouse.Open(&clickhouse.Options{
+	             ^
+--- api ---
+--- auth-service ---
+internal/service/auth/service.go:89:80: undefined: jwt (typecheck)
+func (s *AuthService) ValidateToken(ctx context.Context, tokenString string) (*jwt.Token, error) {
+                                                                               ^
+internal/service/auth/service.go:90:16: undefined: jwt (typecheck)
+	token, err := jwt.Parse(tokenString, func(t *jwt.Token) (interface{}, error) {
+	              ^
+internal/service/auth/service.go:92:16: undefined: jwt (typecheck)
+			return nil, jwt.ErrSignatureInvalid
+			            ^
+internal/repository/redis/repo.go:11:10: undefined: redis (typecheck)
+	client *redis.Client
+	        ^
+internal/repository/redis/repo.go:14:18: undefined: redis (typecheck)
+func New(client *redis.Client) *AuthRepository {
+                 ^
+--- beat-service ---
+internal/repository/elasticsearch/repo.go:17:10: undefined: elasticsearch (typecheck)
+	client *elasticsearch.Client
+	        ^
+internal/repository/elasticsearch/repo.go:20:18: undefined: elasticsearch (typecheck)
+func New(client *elasticsearch.Client) *BeatRepository {
+                 ^
+internal/repository/minio/repo.go:13:10: undefined: minio (typecheck)
+	client *minio.Client
+	        ^
+internal/repository/minio/repo.go:16:18: undefined: minio (typecheck)
+func New(client *minio.Client) *FileRepository {
+                 ^
+internal/repository/minio/repo.go:29:46: undefined: minio (typecheck)
+		err = r.client.MakeBucket(ctx, bucketName, minio.MakeBucketOptions{})
+		                                           ^
+internal/seeder/seeder.go:1: : # github.com/bns/beat-service/internal/seeder
+internal/seeder/seeder.go:26:5: unknown field Genre in struct literal of type models.Beat
+internal/seeder/seeder.go:27:5: unknown field BPM in struct literal of type models.Beat
+internal/seeder/seeder.go:33:5: unknown field Rating in struct literal of type models.Beat
+internal/seeder/seeder.go:34:5: unknown field DownloadURL in struct literal of type models.Beat
+internal/seeder/seeder.go:38:5: unknown field Genre in struct literal of type models.Beat
+internal/seeder/seeder.go:39:5: unknown field BPM in struct literal of type models.Beat
+internal/seeder/seeder.go:45:5: unknown field Rating in struct literal of type models.Beat
+internal/seeder/seeder.go:46:5: unknown field DownloadURL in struct literal of type models.Beat
+internal/seeder/seeder.go:50:5: unknown field Genre in struct literal of type models.Beat
+internal/seeder/seeder.go:51:5: unknown field BPM in struct literal of type models.Beat
+internal/seeder/seeder.go:51:5: too many errors (typecheck)
+package seeder
+cmd/app/main.go:18:2: could not import github.com/bns/beat-service/internal/seeder (-: # github.com/bns/beat-service/internal/seeder
+internal/seeder/seeder.go:26:5: unknown field Genre in struct literal of type models.Beat
+internal/seeder/seeder.go:27:5: unknown field BPM in struct literal of type models.Beat
+internal/seeder/seeder.go:33:5: unknown field Rating in struct literal of type models.Beat
+internal/seeder/seeder.go:34:5: unknown field DownloadURL in struct literal of type models.Beat
+internal/seeder/seeder.go:38:5: unknown field Genre in struct literal of type models.Beat
+internal/seeder/seeder.go:39:5: unknown field BPM in struct literal of type models.Beat
+internal/seeder/seeder.go:45:5: unknown field Rating in struct literal of type models.Beat
+internal/seeder/seeder.go:46:5: unknown field DownloadURL in struct literal of type models.Beat
+internal/seeder/seeder.go:50:5: unknown field Genre in struct literal of type models.Beat
+internal/seeder/seeder.go:51:5: unknown field BPM in struct literal of type models.Beat
+internal/seeder/seeder.go:51:5: too many errors) (typecheck)
+	"github.com/bns/beat-service/internal/seeder"
+	^
+--- interaction-service ---
+internal/repository/mongodb/repo.go:74:18: missing type in composite literal (typecheck)
+		SetSort(bson.D{{Key: "created_at", Value: -1}}).
+		               ^
+internal/repository/mongodb/repo.go:93:3: missing type in composite literal (typecheck)
+		{{Key: "$match", Value: bson.M{"beat_id": beatID}}},
+		^
+internal/repository/mongodb/repo.go:94:3: missing type in composite literal (typecheck)
+		{{Key: "$group", Value: bson.M{
+		^
+--- order-service ---
+internal/repository/mongodb/repo.go:50:118: missing type in composite literal (typecheck)
+	cursor, err := r.db.Collection(ordersCollection).Find(ctx, bson.M{"user_id": userID}, options.Find().SetSort(bson.D{{Key: "created_at", Value: -1}}))
+	                                                                                                                    ^
+--- user-service ---
+internal/service/user/token.go:13:21: undefined: jwt (typecheck)
+		RegisteredClaims: jwt.RegisteredClaims{
+		                  ^
+internal/service/user/token.go:15:15: undefined: jwt (typecheck)
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * 24 * 7)), // 1 week
+			           ^
+internal/service/user/token.go:16:15: undefined: jwt (typecheck)
+			IssuedAt:  jwt.NewNumericDate(time.Now()),
+			           ^
+cmd/app/main.go:69:12: undefined: migrate (typecheck)
+	m, err := migrate.New("file://./migrations", migrationURI)
+	          ^
+cmd/app/main.go:74:41: undefined: migrate (typecheck)
+	if err := m.Up(); err != nil && err != migrate.ErrNoChange {
+	                                       ^
+pkg/kafka/consumer.go:12:10: undefined: kafka (typecheck)
+	reader *kafka.Reader
+	        ^
+pkg/kafka/producer.go:12:10: undefined: kafka (typecheck)
+	writer *kafka.Writer
+	        ^
+pkg/kafka/consumer.go:27:85: undefined: kafka (typecheck)
+func (cg *ConsumerGroup) Consume(ctx context.Context, handler func(context.Context, kafka.Message) error) {
+                                                                                    ^
+internal/repository/mongodb/user/repository_test.go:26:3: undefined: testcontainers (typecheck)
+		testcontainers.WithImage("mongo:5.0"),
+		^
+internal/repository/mongodb/user/repository_test.go:27:3: undefined: testcontainers (typecheck)
+		testcontainers.WithWaitStrategy(
+		^
+internal/service/user/user_service_test.go:1: : # github.com/bns/user-service/internal/service/user_test [github.com/bns/user-service/internal/service/user.test]
+internal/service/user/user_service_test.go:25:80: not enough arguments in call to userservice.NewUserService
+	have (*mocks.MockUserRepository, *mocks.MockHasher, *mocks.MockProducer, *mocks.MockWalletService)
+	want (userservice.UserRepository, "github.com/bns/pkg/hash".Hasher, userservice.Producer, userservice.WalletService, string)
+internal/service/user/user_service_test.go:128:17: assignment mismatch: 2 variables but userService.Register returns 3 values (typecheck)
+package userservice_test
+--- wallet-service ---

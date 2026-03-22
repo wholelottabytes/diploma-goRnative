@@ -20,7 +20,20 @@ import LinearGradient from 'react-native-linear-gradient';
 import { Beat, BeatDetailsScreenProps } from '../types/type'; // Import Beat from types
 import { beatApi, interactionApi, orderApi, userApi } from '../api/services';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Colors } from '../theme/theme'; // Keep Colors for styling, others are not used
+
+const { width } = Dimensions.get('window');
+const AnimatedStar = Animated.createAnimatedComponent(Star);
+
+type Comment = {
+  id: string;
+  username: string;
+  text: string;
+  createdAt: string;
+};
+
+const BeatDetailsScreen = ({ route, navigation }: BeatDetailsScreenProps) => {
+  const { beat } = route.params;
+
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
@@ -38,7 +51,7 @@ import { Colors } from '../theme/theme'; // Keep Colors for styling, others are 
 
   const floatAnim = useRef(new Animated.Value(0)).current;
   const [isArtworkLoaded, setIsArtworkLoaded] = useState(false);
-  const videoRef = useRef<VideoRefType | null>(null);
+  const videoRef = useRef<any | null>(null);
 
   useEffect(() => {
     Animated.loop(
@@ -71,7 +84,7 @@ import { Colors } from '../theme/theme'; // Keep Colors for styling, others are 
 
   const fetchUserData = useCallback(async () => {
     try {
-      const response = await userApi.getProfile('me'); // 'me' or from AsyncStorage
+      const response = await userApi.getProfile();
       setUser(response.data);
     } catch (error) {
       console.error('Error fetching user data:', error);
@@ -298,7 +311,7 @@ const handleDeleteBeat = async () => {
           <Text style={styles.title}>{beat.title}</Text>
 
           <TouchableOpacity
-            onPress={() => navigation.navigate('UserProfile', { userId: beat.author_id })}
+            onPress={() => navigation.navigate('UserProfile', { username: beat.author_name })}
           >
             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, marginBottom: 20 }}>
               {beat.author_avatar && <Image source={{ uri: beat.author_avatar }} style={{ width: 24, height: 24, borderRadius: 12 }} />}

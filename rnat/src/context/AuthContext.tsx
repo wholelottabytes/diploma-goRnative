@@ -1,4 +1,4 @@
-import React, { createContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useState, useEffect, ReactNode, useCallback } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import base64 from 'react-native-base64';
 import client from '../api/client'; // Import the Axios client
@@ -63,6 +63,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         }
     };
 
+    const logout = useCallback(async () => {
+        await AsyncStorage.removeItem('token');
+        await AsyncStorage.removeItem('user');
+        setAuthHeader(null); // Clear header on logout
+
+        setIsAuthenticated(false);
+        setUser(null);
+    }, []);
+
     // Проверка авторизации при запуске
    useEffect(() => {
     const checkAuth = async () => {
@@ -104,22 +113,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         setAuthHeader(token); // Set header after login
     };
 
-    // Выход
-    const logout = async () => {
-        await AsyncStorage.removeItem('token');
-        await AsyncStorage.removeItem('user');
-        setAuthHeader(null); // Clear header on logout
-
-        setIsAuthenticated(false);
-        setUser(null);
-    };
-
     // Fetch full user profile after authentication
     useEffect(() => {
         const fetchProfile = async () => {
             if (isAuthenticated && user && !user.name) { // Only fetch if authenticated and full profile not yet loaded
                 try {
-                    const profileRes = await userApi.getProfile(user._id);
+                    const profileRes = await userApi.getProfile();
                     const fullProfileData: User = profileRes.data;
                     setUser(prevUser => ({
                         ...prevUser,

@@ -15,7 +15,7 @@ import {
 import LinearGradient from 'react-native-linear-gradient';
 import { AuthContext } from '../context/AuthContext';
 import { Colors, Typography, Spacing, BorderRadius } from '../theme/theme';
-import { authApi, userApi } from '../api/services';
+import { userApi } from '../api/services';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Moved RoleButton outside RegisterScreen to prevent react/no-unstable-nested-components warning
