@@ -54,18 +54,24 @@ const BeatCard = ({ beat, onPress }: { beat: Beat; onPress: () => void }) => (
       <View style={styles.cardInfo}>
         <Text style={styles.beatTitle} numberOfLines={1}>{beat.title}</Text>
         <View style={styles.artistRow}>
-          {beat.author_avatar && <Image source={{ uri: beat.author_avatar }} style={styles.authorMiniAvatar} />}
-          <Text style={styles.beatArtist} numberOfLines={1}>{beat.author_name || 'Unknown'}</Text>
+          {/* Исправлено: используем !!, чтобы избежать рендера 0 или undefined */}
+          {!!beat.author_avatar && (
+            <Image source={{ uri: beat.author_avatar }} style={styles.authorMiniAvatar} />
+          )}
+          <Text style={styles.beatArtist} numberOfLines={1}>
+            {beat.author_name || 'Unknown'}
+          </Text>
         </View>
         <View style={styles.beatMeta}>
           <View style={styles.tag}>
-            <Text style={styles.tagText}>{beat.genre}</Text>
+            <Text style={styles.tagText}>{beat.genre || 'Unknown'}</Text>
           </View>
-          <Text style={styles.bpm}>{beat.bpm} BPM</Text>
+          <Text style={styles.bpm}>{beat.bpm?.toString() || '—'} BPM</Text>
         </View>
         <View style={styles.priceRow}>
           <Text style={styles.price}>${beat.price}</Text>
-          {beat.rating && (
+          {/* Исправлено: !! предотвращает ошибку при rating = 0 */}
+          {!!beat.rating && (
             <Text style={styles.rating}>⭐ {beat.rating.toFixed(1)}</Text>
           )}
         </View>
@@ -125,7 +131,6 @@ export default function HomeScreen({ navigation }: any) {
 
   const renderHeader = () => (
     <View>
-      {/* Top header */}
       <LinearGradient
         colors={['rgba(168,85,247,0.15)', 'transparent']}
         style={styles.headerGradient}>
@@ -138,7 +143,6 @@ export default function HomeScreen({ navigation }: any) {
           </View>
         </View>
 
-        {/* Search bar */}
         <View style={styles.searchBar}>
           <Search color={Colors.textMuted} width={18} height={18} />
           <TextInput
@@ -183,7 +187,13 @@ export default function HomeScreen({ navigation }: any) {
             <Text style={styles.emptySubText}>Try a different search term</Text>
           </View>
         }
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Colors.primary} />}
+        refreshControl={
+          <RefreshControl 
+            refreshing={refreshing} 
+            onRefresh={onRefresh} 
+            tintColor={Colors.primary} 
+          />
+        }
         contentContainerStyle={styles.list}
         showsVerticalScrollIndicator={false}
       />

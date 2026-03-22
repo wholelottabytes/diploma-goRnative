@@ -1,13 +1,11 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { ScrollView, StyleSheet, Alert } from 'react-native';
-import { TextInput, Button, Title } from 'react-native-paper';
+import { ScrollView, StyleSheet, Alert, View } from 'react-native';
+import { TextInput, Button, Title, Chip, Text } from 'react-native-paper';
 import { AuthContext } from '../context/AuthContext';
 import config from './config';
 import { pick } from '@react-native-documents/picker';
-import { Chip } from 'react-native-paper';
 
-
-const SERVER = `http://${config.serverIP}:5000`;
+const SERVER = config.API_URL + '/api';
 
 interface PickedFile {
   uri: string;
@@ -23,6 +21,8 @@ const AddBeatScreen: React.FC<any> = ({ navigation }) => {
   const [price, setPrice] = useState('');
   const [description, setDescription] = useState('');
   const [tags, setTags] = useState('');
+  const [genre, setGenre] = useState('');
+  const [bpm, setBpm] = useState('');
 
   const [imageFile, setImageFile] = useState<PickedFile | null>(null);
   const [audioFile, setAudioFile] = useState<PickedFile | null>(null);
@@ -35,19 +35,16 @@ const AddBeatScreen: React.FC<any> = ({ navigation }) => {
     }
   }, [user]);
 
-  // Генерация уникального имени файла
   const generateUniqueFilename = (extension: string): string => {
     const timestamp = Date.now();
     const randomPart = Math.random().toString(36).substring(2, 15);
     return `${timestamp}-${randomPart}${extension}`;
   };
 
-  // Выбор изображения
   const handleImagePicker = async () => {
     try {
       const [file] = await pick({ type: ['image/*'], mode: 'import' });
-      const uniqueName = generateUniqueFilename('.jpg');
-      setImageFile({ uri: file.uri, name: uniqueName, type: file.type });
+      setImageFile({ uri: file.uri, name: file.name, type: file.type });
     } catch (err: any) {
       if (err.code !== 'OPERATION_CANCELED') {
         Alert.alert('Error', 'Failed to select image');
@@ -55,12 +52,10 @@ const AddBeatScreen: React.FC<any> = ({ navigation }) => {
     }
   };
 
-  // Выбор аудио
   const handleAudioPicker = async () => {
     try {
       const [file] = await pick({ type: ['audio/*'], mode: 'import' });
-      const uniqueName = generateUniqueFilename('.mp3');
-      setAudioFile({ uri: file.uri, name: uniqueName, type: file.type });
+      setAudioFile({ uri: file.uri, name: file.name, type: file.type });
     } catch (err: any) {
       if (err.code !== 'OPERATION_CANCELED') {
         Alert.alert('Error', 'Failed to select audio');
@@ -69,7 +64,7 @@ const AddBeatScreen: React.FC<any> = ({ navigation }) => {
   };
 
   const handleSubmit = async () => {
-    if (!title || !author || !price || !description || !tags || !imageFile || !audioFile) {
+    if (!title || !author || !price || !description || !tags || !genre || !bpm || !imageFile || !audioFile) {
       Alert.alert('Error', 'Please fill in all fields and select files');
       return;
     }
@@ -83,12 +78,14 @@ const AddBeatScreen: React.FC<any> = ({ navigation }) => {
     try {
       const token = user?.token;
 
-      // Загрузить изображение
+      // Upload Image
+      const imgExt = imageFile.name?.substring(imageFile.name.lastIndexOf('.')) || '';
+      const uniqueImgName = generateUniqueFilename(imgExt);
       const imgData = new FormData();
-      imgData.append('image', {
+      imgData.append('file', {
         uri: imageFile.uri,
-        name: imageFile.name ?? 'photo.jpg',
-        type: imageFile.type ?? 'image/jpeg',
+        name: uniqueImgName,
+        type: imageFile.type,
       } as any);
 
       const imgRes = await fetch(`${SERVER}/beats/upload-image`, {
@@ -97,21 +94,20 @@ const AddBeatScreen: React.FC<any> = ({ navigation }) => {
         body: imgData,
       });
 
-      const imgText = await imgRes.text(); // Получаем ответ как текст
-      console.log('Image upload response:', imgText); // Печатаем ответ сервера
-
+      const imgText = await imgRes.text();
       if (!imgRes.ok) {
-        throw new Error('Error uploading image');
+        throw new Error(`Error uploading image: ${imgRes.status} ${imgText}`);
       }
-      const imgJson = JSON.parse(imgText); // Пытаемся распарсить JSON, если ответ в формате JSON
-      console.log('Image JSON:', imgJson);
+      const imgJson = JSON.parse(imgText);
 
-      // Загрузить аудио
+      // Upload Audio
+      const audioExt = audioFile.name?.substring(audioFile.name.lastIndexOf('.')) || '';
+      const uniqueAudioName = generateUniqueFilename(audioExt);
       const audioData = new FormData();
-      audioData.append('audio', {
+      audioData.append('file', {
         uri: audioFile.uri,
-        name: audioFile.name ?? 'audio.mp3',
-        type: audioFile.type ?? 'audio/mpeg',
+        name: uniqueAudioName,
+        type: audioFile.type,
       } as any);
 
       const audioRes = await fetch(`${SERVER}/beats/upload-audio`, {
@@ -120,28 +116,26 @@ const AddBeatScreen: React.FC<any> = ({ navigation }) => {
         body: audioData,
       });
 
-      const audioText = await audioRes.text(); // Получаем ответ как текст
-      console.log('Audio upload response:', audioText); // Печатаем ответ сервера
-
+      const audioText = await audioRes.text();
       if (!audioRes.ok) {
-        throw new Error('Error uploading audio');
+        throw new Error(`Error uploading audio: ${audioRes.status} ${audioText}`);
       }
-      const audioJson = JSON.parse(audioText); // Пытаемся распарсить JSON, если ответ в формате JSON
-      console.log('Audio JSON:', audioJson);
-
-      // Создать бит
+      const audioJson = JSON.parse(audioText);
+      
+      // Create Beat
       const newBeat = {
         title,
-        author,
         price: Number(price),
         description,
+        genre,
+        bpm: parseInt(bpm, 10),
         tags: tags.split(',').map(t => t.trim()),
-        imageUrl: imgJson.imageUrl,
-        audioUrl: audioJson.audioUrl,
-        user: user!._id,
+        imageUrl: imgJson.url,
+        audioUrl: audioJson.url,
+        author_id: user!._id,
       };
 
-      const beatRes = await fetch(`${SERVER}/beats/`, {
+      const beatRes = await fetch(`${SERVER}/beats`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -151,16 +145,14 @@ const AddBeatScreen: React.FC<any> = ({ navigation }) => {
       });
 
       const beatText = await beatRes.text();
-      console.log('Beat creation response:', beatText); // Печатаем ответ сервера
-
       if (!beatRes.ok) {
-        throw new Error('Error creating beat');
+        throw new Error(`Error creating beat: ${beatRes.status} ${beatText}`);
       }
       const beatJson = JSON.parse(beatText);
-      console.log('Beat JSON:', beatJson);
-
+      
       Alert.alert('Success', `Beat created, ID: ${beatJson._id}`);
       navigation.goBack();
+      
     } catch (error: any) {
       Alert.alert('Error', error.message);
     } finally {
@@ -172,92 +164,29 @@ const AddBeatScreen: React.FC<any> = ({ navigation }) => {
     <ScrollView contentContainerStyle={styles.container}>
       <Title style={styles.title}>Add New Beat</Title>
 
-      <TextInput
-        label="Title"
-        value={title}
-        onChangeText={setTitle}
-        style={styles.input}
-        mode="outlined"
-      />
+      <TextInput label="Title" value={title} onChangeText={setTitle} style={styles.input} mode="outlined" />
+      <TextInput label="Author" value={author} style={styles.input} mode="outlined" editable={false} />
+      <TextInput label="Price" value={price} onChangeText={setPrice} style={styles.input} mode="outlined" keyboardType="numeric" />
+      <TextInput label="Description" value={description} onChangeText={setDescription} style={styles.input} mode="outlined" multiline />
+      <TextInput label="Genre" value={genre} onChangeText={setGenre} style={styles.input} mode="outlined" />
+      <TextInput label="BPM" value={bpm} onChangeText={setBpm} style={styles.input} mode="outlined" keyboardType="numeric" />
+      <TextInput label="Tags (comma separated)" value={tags} onChangeText={setTags} style={styles.input} mode="outlined" />
+      
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.tagsContainer}>
+        {tags.split(',').map((tag, index) => (
+          tag.trim() ? (
+            <Chip key={index} style={styles.tag} textStyle={styles.tagText}>{tag.trim()}</Chip>
+          ) : null
+        ))}
+      </ScrollView>
 
-      <TextInput
-        label="Author"
-        value={author}
-        style={styles.input}
-        mode="outlined"
-        editable={false}
-      />
+      <Button onPress={handleImagePicker} mode="contained" style={styles.button}>Select Image</Button>
+      <TextInput label="Selected Image" value={imageFile?.name || ''} style={styles.input} mode="outlined" editable={false} />
 
-      <TextInput
-        label="Price"
-        value={price}
-        onChangeText={setPrice}
-        style={styles.input}
-        mode="outlined"
-        keyboardType="numeric"
-      />
+      <Button onPress={handleAudioPicker} mode="contained" style={styles.button}>Select Audio</Button>
+      <TextInput label="Selected Audio" value={audioFile?.name || ''} style={styles.input} mode="outlined" editable={false} />
 
-      <TextInput
-        label="Description"
-        value={description}
-        onChangeText={setDescription}
-        style={styles.input}
-        mode="outlined"
-        multiline
-      />
-
-      <TextInput
-        label="Tags (comma separated)"
-        value={tags}
-        onChangeText={setTags}
-        style={styles.input}
-        mode="outlined"
-      />
-<ScrollView
-  horizontal
-  showsHorizontalScrollIndicator={false}
-  contentContainerStyle={styles.tagsContainer}
->
-  {tags.split(',').map((tag, index) => (
-    tag.trim() ? (
-      <Chip key={index} style={styles.tag} textStyle={styles.tagText}>
-        {tag.trim()}
-      </Chip>
-    ) : null
-  ))}
-</ScrollView>
-
-      <Button onPress={handleImagePicker} mode="contained" style={styles.button}>
-        Select Image
-      </Button>
-      <TextInput
-        label="Selected Image"
-        value={imageFile?.name || ''}
-        style={styles.input}
-        mode="outlined"
-        editable={false}
-      />
-
-      <Button onPress={handleAudioPicker} mode="contained" style={styles.button}>
-        Select Audio
-      </Button>
-      <TextInput
-        label="Selected Audio"
-        value={audioFile?.name || ''}
-        style={styles.input}
-        mode="outlined"
-        editable={false}
-      />
-
-      <Button
-        mode="contained"
-        onPress={handleSubmit}
-        loading={loading}
-        style={styles.submitButton}
-        contentStyle={styles.buttonContent}
-      >
-        Create Beat
-      </Button>
+      <Button mode="contained" onPress={handleSubmit} loading={loading} style={styles.submitButton} contentStyle={styles.buttonContent}>Create Beat</Button>
     </ScrollView>
   );
 };
@@ -269,19 +198,9 @@ const styles = StyleSheet.create({
   button: { marginTop: 10, backgroundColor: '#000' },
   submitButton: { marginTop: 20, backgroundColor: '#000' },
   buttonContent: { paddingVertical: 10 },
-  tagsContainer: {
-  flexDirection: 'row',
-  flexWrap: 'wrap',
-  marginBottom: 15,
-},
-tag: {
-  margin: 4,
-  backgroundColor: '#e0e0e0',
-},
-tagText: {
-  color: '#000',
-},
-
+  tagsContainer: { flexDirection: 'row', flexWrap: 'wrap', marginBottom: 15 },
+  tag: { margin: 4, backgroundColor: '#e0e0e0' },
+  tagText: { color: '#000' },
 });
 
 export default AddBeatScreen;

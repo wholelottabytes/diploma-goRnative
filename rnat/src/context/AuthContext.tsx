@@ -1,6 +1,6 @@
 import React, { createContext, useState, useEffect, ReactNode, useCallback } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import base64 from 'react-native-base64';
+import { jwtDecode } from "jwt-decode";
 import client from '../api/client'; // Import the Axios client
 import { userApi } from '../api/services'; // Import userApi
 
@@ -18,9 +18,7 @@ interface User {
 }
 function parseJwt(token: string) {
     try {
-        const base64Url = token.split('.')[1];
-        const base64Decoded = base64.decode(base64Url);
-        return JSON.parse(base64Decoded);
+        return jwtDecode(token);
     } catch (error) {
         console.error('Error parsing JWT:', error);
         return null;

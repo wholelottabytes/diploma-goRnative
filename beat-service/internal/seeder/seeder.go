@@ -31,6 +31,7 @@ func SeedData(beatService *beatservice.BeatService, beatRepo beatservice.BeatRep
 				AudioURL:    "https://example.com/audio/chill.mp3",
 				Rating:      4.5,
 				DownloadURL: "https://example.com/downloads/chill.zip",
+				Tags:        make([]string, 0),
 			},
 			{
 				Title:       "Epic Trap Anthem",
@@ -43,6 +44,7 @@ func SeedData(beatService *beatservice.BeatService, beatRepo beatservice.BeatRep
 				AudioURL:    "https://example.com/audio/trap.mp3",
 				Rating:      4.8,
 				DownloadURL: "https://example.com/downloads/trap.zip",
+				Tags:        make([]string, 0),
 			},
 			{
 				Title:       "Smooth R&B Groove",
@@ -55,6 +57,7 @@ func SeedData(beatService *beatservice.BeatService, beatRepo beatservice.BeatRep
 				AudioURL:    "https://example.com/audio/rnb.mp3",
 				Rating:      4.2,
 				DownloadURL: "https://example.com/downloads/rnb.zip",
+				Tags:        make([]string, 0),
 			},
 		}
 

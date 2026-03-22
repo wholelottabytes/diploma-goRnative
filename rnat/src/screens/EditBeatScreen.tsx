@@ -8,7 +8,7 @@ import { RouteProp, useRoute, useNavigation } from '@react-navigation/native';
 import { RootStackParamList } from '../types/type';
 import { pick } from '@react-native-documents/picker';
 
-const SERVER = `http://${config.serverIP}:5000`;
+const SERVER = config.API_URL + '/api';
 
 interface PickedFile {
   uri: string;
@@ -69,7 +69,7 @@ const EditBeatScreen: React.FC<any> = () => {
 
     if (imageFile) {
       const imgData = new FormData();
-      imgData.append('image', {
+      imgData.append('file', {
         uri: imageFile.uri,
         name: imageFile.name ?? 'photo.jpg',
         type: imageFile.type ?? 'image/jpeg',
@@ -82,7 +82,8 @@ const EditBeatScreen: React.FC<any> = () => {
       });
 
       if (!imgRes.ok) {
-        throw new Error('Error uploading image');
+        const errorText = await imgRes.text();
+        throw new Error(`Error uploading image: ${imgRes.status} ${errorText}`);
       }
 
       const imgJson = await imgRes.json();

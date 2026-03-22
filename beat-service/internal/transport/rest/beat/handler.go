@@ -42,11 +42,8 @@ func (h *Handler) RegisterRoutes(router *gin.RouterGroup) {
 		authGroup.DELETE("/:id", h.deleteBeat)
 		authGroup.GET("/my", h.getMyBeats)
 
-		upload := authGroup.Group("/upload")
-		{
-			upload.POST("/image", h.uploadImage)
-			upload.POST("/audio", h.uploadAudio)
-		}
+		authGroup.POST("/upload-image", h.uploadImage)
+		authGroup.POST("/upload-audio", h.uploadAudio)
 	}
 }
 

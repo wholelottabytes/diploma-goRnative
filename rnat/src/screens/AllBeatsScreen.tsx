@@ -30,13 +30,19 @@ const BeatRow = ({ beat, onPress }: { beat: Beat; onPress: () => void }) => (
       <Text style={styles.rowTitle} numberOfLines={1}>{beat.title}</Text>
       <Text style={styles.rowArtist}>{beat.artistName}</Text>
       <View style={styles.rowMeta}>
-        <Text style={styles.metaChip}>{beat.genre}</Text>
+        {/* Текст внутри View обязательно в компоненте Text */}
+        <View style={styles.metaChipContainer}>
+          <Text style={styles.metaChip}>{beat.genre}</Text>
+        </View>
         <Text style={styles.metaBpm}>{beat.bpm} BPM</Text>
       </View>
     </View>
     <View style={styles.rowRight}>
       <Text style={styles.rowPrice}>${beat.price}</Text>
-      {beat.rating && <Text style={styles.rowRating}>⭐ {beat.rating.toFixed(1)}</Text>}
+      {/* Использование !! гарантирует получение boolean, а не числа 0 */}
+      {!!beat.rating && (
+        <Text style={styles.rowRating}>⭐ {beat.rating.toFixed(1)}</Text>
+      )}
     </View>
   </TouchableOpacity>
 );
@@ -53,29 +59,43 @@ export default function AllBeatsScreen({ navigation }: any) {
     try {
       const res = await beatApi.getAll();
       setBeats(res.data ?? []);
-    } catch { setBeats([]); }
+    } catch { 
+      setBeats([]); 
+    }
   };
 
   useEffect(() => {
     let result = beats;
-    if (genre !== 'All') {result = result.filter(b => b.genre === genre);}
-    if (search.trim()) {result = result.filter(b =>
-      b.title.toLowerCase().includes(search.toLowerCase()) ||
-      b.artistName.toLowerCase().includes(search.toLowerCase())
-    );}
+    if (genre !== 'All') {
+      result = result.filter(b => b.genre === genre);
+    }
+    if (search.trim()) {
+      result = result.filter(b =>
+        b.title.toLowerCase().includes(search.toLowerCase()) ||
+        b.artistName.toLowerCase().includes(search.toLowerCase())
+      );
+    }
     setFiltered(result);
   }, [beats, genre, search]);
 
   useEffect(() => {
-    (async () => { setLoading(true); await load(); setLoading(false); })();
+    (async () => { 
+      setLoading(true); 
+      await load(); 
+      setLoading(false); 
+    })();
   }, []);
 
-  const onRefresh = async () => { setRefreshing(true); await load(); setRefreshing(false); };
+  const onRefresh = async () => { 
+    setRefreshing(true); 
+    await load(); 
+    setRefreshing(false); 
+  };
 
   return (
     <View style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor="#0A0A0F" />
-      {/* Header */}
+      
       <LinearGradient colors={['rgba(168,85,247,0.15)','transparent']} style={styles.topBar}>
         <Text style={styles.screenTitle}>Explore</Text>
         <View style={styles.searchBar}>
@@ -94,7 +114,6 @@ export default function AllBeatsScreen({ navigation }: any) {
           data={GENRES}
           keyExtractor={g => g}
           showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{ gap: Spacing.xs }}
           renderItem={({ item }) => (
             <TouchableOpacity
               onPress={() => setGenre(item)}
@@ -102,11 +121,14 @@ export default function AllBeatsScreen({ navigation }: any) {
               <Text style={[styles.genreText, genre === item && styles.genreTextActive]}>{item}</Text>
             </TouchableOpacity>
           )}
+          contentContainerStyle={{ gap: Spacing.xs }}
         />
       </LinearGradient>
 
       {loading ? (
-        <View style={styles.centered}><ActivityIndicator size="large" color={Colors.primary} /></View>
+        <View style={styles.centered}>
+          <ActivityIndicator size="large" color={Colors.primary} />
+        </View>
       ) : (
         <FlatList
           data={filtered}
@@ -120,7 +142,13 @@ export default function AllBeatsScreen({ navigation }: any) {
               <Text style={styles.emptySub}>Try a different search or genre</Text>
             </View>
           }
-          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Colors.primary} />}
+          refreshControl={
+            <RefreshControl 
+              refreshing={refreshing} 
+              onRefresh={onRefresh} 
+              tintColor={Colors.primary} 
+            />
+          }
           contentContainerStyle={styles.list}
           showsVerticalScrollIndicator={false}
         />
@@ -161,11 +189,12 @@ const styles = StyleSheet.create({
   rowInfo: { flex: 1 },
   rowTitle: { fontSize: Typography.base, fontWeight: Typography.semibold, color: Colors.textPrimary },
   rowArtist: { fontSize: Typography.sm, color: Colors.textSecondary },
-  rowMeta: { flexDirection: 'row', gap: Spacing.xs, marginTop: 4 },
-  metaChip: {
+  rowMeta: { flexDirection: 'row', gap: Spacing.xs, marginTop: 4, alignItems: 'center' },
+  metaChipContainer: {
     backgroundColor: 'rgba(168,85,247,0.15)', borderRadius: BorderRadius.full,
-    paddingHorizontal: Spacing.xs, fontSize: Typography.xs, color: Colors.primary,
+    paddingHorizontal: Spacing.xs,
   },
+  metaChip: { fontSize: Typography.xs, color: Colors.primary },
   metaBpm: { fontSize: Typography.xs, color: Colors.textMuted },
   rowRight: { alignItems: 'flex-end' },
   rowPrice: { fontSize: Typography.base, fontWeight: Typography.bold, color: Colors.primary },

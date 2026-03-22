@@ -1,4 +1,5 @@
 import React from 'react';
+import { Text, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { BottomTabNavigationProp, createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -22,7 +23,6 @@ import { Colors } from './theme/theme';
 
 // Icons – using emoji fallbacks for maximum compatibility
 const TabIcon = ({ emoji, focused }: { emoji: string; focused: boolean }) => {
-  const { Text, View } = require('react-native'); // Keep require for Text/View here if not imported globally
   return (
     <View style={{ alignItems: 'center' }}>
       <Text style={{ fontSize: 20, opacity: focused ? 1 : 0.5 }}>{emoji}</Text>

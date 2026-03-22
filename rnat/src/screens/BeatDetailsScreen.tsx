@@ -145,62 +145,63 @@ const BeatDetailsScreen = ({ route, navigation }: BeatDetailsScreenProps) => {
       Alert.alert('Error', error.response?.data?.error || 'Purchase failed');
     }
   };
-const handleDeleteBeat = async () => {
-  try {
-    const token = await AsyncStorage.getItem('token');
-    if (!token) {
-      Alert.alert('Error', 'Authorization required');
-      return;
-    }
 
-    Alert.alert(
-      'Confirm Deletion',
-      'Are you sure you want to delete this beat? This action cannot be undone.',
-      [
-        {
-          text: 'Cancel',
-          style: 'cancel',
-        },
-        {
-          text: 'Delete',
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              await beatApi.delete(beat.id);
-              Alert.alert('Success', 'Beat deleted');
-              navigation.goBack();
-            } catch (error: any) {
-              let errorMessage = 'Failed to delete beat';
+  const handleDeleteBeat = async () => {
+    try {
+      const token = await AsyncStorage.getItem('token');
+      if (!token) {
+        Alert.alert('Error', 'Authorization required');
+        return;
+      }
 
-              // Generic error handling, assuming error.response might exist for API errors
-              if (error.response) {
-                errorMessage = error.response.data.message ||
-                               error.response.data.error ||
-                               error.response.statusText ||
-                               errorMessage;
-              } else if (error.message) {
-                errorMessage = error.message;
-              }
-
-              Alert.alert(
-                'Error',
-                errorMessage,
-                [{ text: 'OK', onPress: () => console.error('Delete error:', error) }]
-              );
-            }
+      Alert.alert(
+        'Confirm Deletion',
+        'Are you sure you want to delete this beat? This action cannot be undone.',
+        [
+          {
+            text: 'Cancel',
+            style: 'cancel',
           },
-        },
-      ],
-      { cancelable: true }
-    );
-  } catch (error) {
-    Alert.alert(
-      'Error',
-      'Failed to initiate deletion',
-      [{ text: 'OK', onPress: () => console.error('Init error:', error) }]
-    );
-  }
-};
+          {
+            text: 'Delete',
+            style: 'destructive',
+            onPress: async () => {
+              try {
+                await beatApi.delete(beat.id);
+                Alert.alert('Success', 'Beat deleted');
+                navigation.goBack();
+              } catch (error: any) {
+                let errorMessage = 'Failed to delete beat';
+
+                if (error.response) {
+                  errorMessage = error.response.data.message ||
+                                 error.response.data.error ||
+                                 error.response.statusText ||
+                                 errorMessage;
+                } else if (error.message) {
+                  errorMessage = error.message;
+                }
+
+                Alert.alert(
+                  'Error',
+                  errorMessage,
+                  [{ text: 'OK', onPress: () => console.error('Delete error:', error) }]
+                );
+              }
+            },
+          },
+        ],
+        { cancelable: true }
+      );
+    } catch (error) {
+      Alert.alert(
+        'Error',
+        'Failed to initiate deletion',
+        [{ text: 'OK', onPress: () => console.error('Init error:', error) }]
+      );
+    }
+  };
+
   const handleAddComment = async () => {
     try {
       await interactionApi.addComment(beat.id, commentText);

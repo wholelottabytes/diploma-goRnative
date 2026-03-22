@@ -24,10 +24,20 @@ func New(client *elasticsearch.Client) *BeatRepository {
 }
 
 func (r *BeatRepository) Create(ctx context.Context, beat *models.Beat) (string, error) {
-	data, err := json.Marshal(beat)
+	beatMap := make(map[string]interface{})
+	tempData, err := json.Marshal(beat)
 	if err != nil {
 		return "", err
 	}
+	json.Unmarshal(tempData, &beatMap)
+	delete(beatMap, "_id")
+
+	data, err := json.Marshal(beatMap)
+	if err != nil {
+		return "", err
+	}
+
+    fmt.Printf("Indexing data: %s\n", string(data))
 
 	req := esapi.IndexRequest{
 		Index:      beatsIndex,
@@ -43,7 +53,11 @@ func (r *BeatRepository) Create(ctx context.Context, beat *models.Beat) (string,
 	defer res.Body.Close()
 
 	if res.IsError() {
-		return "", fmt.Errorf("error indexing document: %s", res.Status())
+		var e map[string]interface{}
+		if err := json.NewDecoder(res.Body).Decode(&e); err != nil {
+			return "", fmt.Errorf("error indexing document: %s", res.Status())
+		}
+		return "", fmt.Errorf("error indexing document: %s: %v", res.Status(), e)
 	}
 
 	return beat.ID, nil

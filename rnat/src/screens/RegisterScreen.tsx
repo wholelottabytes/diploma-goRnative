@@ -92,104 +92,106 @@ export default function RegisterScreen({ navigation }: any) {
 
   return (
     <LinearGradient colors={['#0A0A0F', '#12121A', '#0A0A0F']} style={styles.gradient}>
-      <StatusBar barStyle="light-content" backgroundColor="#0A0A0F" />
-      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
-        <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
+      <>
+        <StatusBar barStyle="light-content" backgroundColor="#0A0A0F" />
+        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
+          <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
 
-          <View style={styles.logoArea}>
-            <LinearGradient colors={['#A855F7', '#7C3AED']} style={styles.logoCircle}>
-              <Text style={styles.logoIcon}>🎵</Text>
-            </LinearGradient>
-            <Text style={styles.appName}>BeatMarket</Text>
-          </View>
-
-          <View style={styles.card}>
-            <Text style={styles.title}>Create Account</Text>
-            <Text style={styles.subtitle}>Join the community</Text>
-
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Full Name</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="Your name"
-                placeholderTextColor={Colors.textMuted}
-                value={name}
-                onChangeText={setName}
-                selectionColor={Colors.primary}
-              />
+            <View style={styles.logoArea}>
+              <LinearGradient colors={['#A855F7', '#7C3AED']} style={styles.logoCircle}>
+                <Text style={styles.logoIcon}>🎵</Text>
+              </LinearGradient>
+              <Text style={styles.appName}>BeatMarket</Text>
             </View>
 
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Email</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="you@example.com"
-                placeholderTextColor={Colors.textMuted}
-                value={email}
-                onChangeText={setEmail}
-                autoCapitalize="none"
-                keyboardType="email-address"
-                selectionColor={Colors.primary}
-              />
-            </View>
+            <View style={styles.card}>
+              <Text style={styles.title}>Create Account</Text>
+              <Text style={styles.subtitle}>Join the community</Text>
 
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Phone</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="+1 234 567 8900"
-                placeholderTextColor={Colors.textMuted}
-                value={phone}
-                onChangeText={setPhone}
-                keyboardType="phone-pad"
-                selectionColor={Colors.primary}
-              />
-            </View>
+              <View style={styles.inputGroup}>
+                <Text style={styles.label}>Full Name</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Your name"
+                  placeholderTextColor={Colors.textMuted}
+                  value={name}
+                  onChangeText={setName}
+                  selectionColor={Colors.primary}
+                />
+              </View>
 
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Password</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="••••••••"
-                placeholderTextColor={Colors.textMuted}
-                value={password}
-                onChangeText={setPassword}
-                secureTextEntry
-                selectionColor={Colors.primary}
-              />
-            </View>
+              <View style={styles.inputGroup}>
+                <Text style={styles.label}>Email</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="you@example.com"
+                  placeholderTextColor={Colors.textMuted}
+                  value={email}
+                  onChangeText={setEmail}
+                  autoCapitalize="none"
+                  keyboardType="email-address"
+                  selectionColor={Colors.primary}
+                />
+              </View>
 
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>I am a...</Text>
-              <View style={styles.roleRow}>
-                <RoleButton value="user" label="🎧 Listener" role={role} onPress={setRole} />
-                <RoleButton value="artist" label="🎤 Artist" role={role} onPress={setRole} />
+              <View style={styles.inputGroup}>
+                <Text style={styles.label}>Phone</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="+1 234 567 8900"
+                  placeholderTextColor={Colors.textMuted}
+                  value={phone}
+                  onChangeText={setPhone}
+                  keyboardType="phone-pad"
+                  selectionColor={Colors.primary}
+                />
+              </View>
+
+              <View style={styles.inputGroup}>
+                <Text style={styles.label}>Password</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="••••••••"
+                  placeholderTextColor={Colors.textMuted}
+                  value={password}
+                  onChangeText={setPassword}
+                  secureTextEntry
+                  selectionColor={Colors.primary}
+                />
+              </View>
+
+              <View style={styles.inputGroup}>
+                <Text style={styles.label}>I am a...</Text>
+                <View style={styles.roleRow}>
+                  <RoleButton value="user" label="🎧 Listener" role={role} onPress={setRole} />
+                  <RoleButton value="artist" label="🎤 Artist" role={role} onPress={setRole} />
+                </View>
+              </View>
+
+              <TouchableOpacity onPress={handleRegister} disabled={loading} activeOpacity={0.85}>
+                <LinearGradient
+                  colors={['#A855F7', '#7C3AED']}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 0 }}
+                  style={styles.button}>
+                  {loading ? (
+                    <ActivityIndicator color="#fff" />
+                  ) : (
+                    <Text style={styles.buttonText}>Create Account</Text>
+                  )}
+                </LinearGradient>
+              </TouchableOpacity>
+
+              <View style={styles.footer}>
+                <Text style={styles.footerText}>Already have an account? </Text>
+                <TouchableOpacity onPress={() => navigation.navigate('Login')}>
+                  <Text style={styles.footerLink}>Sign In</Text>
+                </TouchableOpacity>
               </View>
             </View>
-
-            <TouchableOpacity onPress={handleRegister} disabled={loading} activeOpacity={0.85}>
-              <LinearGradient
-                colors={['#A855F7', '#7C3AED']}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 0 }}
-                style={styles.button}>
-                {loading ? (
-                  <ActivityIndicator color="#fff" />
-                ) : (
-                  <Text style={styles.buttonText}>Create Account</Text>
-                )}
-              </LinearGradient>
-            </TouchableOpacity>
-
-            <View style={styles.footer}>
-              <Text style={styles.footerText}>Already have an account? </Text>
-              <TouchableOpacity onPress={() => navigation.navigate('Login')}>
-                <Text style={styles.footerLink}>Sign In</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </ScrollView>
-      </KeyboardAvoidingView>
+          </ScrollView>
+        </KeyboardAvoidingView>
+      </>
     </LinearGradient>
   );
 }

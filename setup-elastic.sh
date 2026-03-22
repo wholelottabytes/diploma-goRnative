@@ -44,3 +44,21 @@ curl -X PUT "http://elasticsearch:9200/_index_template/filebeat_template" -H 'Co
 }
 '
 echo "Elasticsearch setup complete."
+
+# 3. Create beats index with correct mapping
+echo "Creating beats index with mapping..."
+curl -X PUT "http://elasticsearch:9200/beats" -H 'Content-Type: application/json' -d'
+{
+  "mappings": {
+    "properties": {
+      "tags": {
+        "type": "keyword"
+      },
+      "author": {
+        "type": "text"
+      }
+    }
+  }
+}
+'
+echo "Beats index created."

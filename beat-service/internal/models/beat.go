@@ -3,7 +3,7 @@ package models
 import "time"
 
 type Beat struct {
-	ID           string    `json:"id"`
+	ID           string    `json:"_id"`
 	Title        string    `json:"title"`
 	Genre        string    `json:"genre"`
 	BPM          int       `json:"bpm"`

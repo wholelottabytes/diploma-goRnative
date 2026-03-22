@@ -22,7 +22,7 @@ interface User {
   balance: number;
 }
 
-const SERVER = `http://${config.serverIP}:5000`;
+const SERVER = config.API_URL + '/api';
 
 const UserProfileScreen: React.FC<UserProfileScreenProps> = ({ route }) => {
   const { username } = route.params;
