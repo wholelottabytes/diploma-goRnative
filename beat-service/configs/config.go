@@ -46,6 +46,7 @@ type MinIOConfig struct {
 	AccessKeyID     string
 	SecretAccessKey string
 	UseSSL          bool
+	PublicEndpoint  string
 }
 
 type KafkaConfig struct {
@@ -89,6 +90,7 @@ func NewConfig() (*Config, error) {
 			AccessKeyID:     getEnv("MINIO_ACCESS_KEY_ID", "minioadmin"),
 			SecretAccessKey: getEnv("MINIO_SECRET_ACCESS_KEY", "minioadmin"),
 			UseSSL:          false,
+			PublicEndpoint:  getEnv("MINIO_PUBLIC_ENDPOINT", ""),
 		},
 		Kafka: KafkaConfig{
 			Brokers: strings.Split(getEnv("KAFKA_BROKERS", "localhost:9092"), ","),

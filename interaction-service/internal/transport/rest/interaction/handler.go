@@ -119,8 +119,23 @@ func (h *Handler) addComment(c *gin.Context) {
 
 func (h *Handler) getComments(c *gin.Context) {
 	beatID := c.Param("id")
-	page, _ := strconv.ParseInt(c.DefaultQuery("page", "1"), 10, 64)
-	limit, _ := strconv.ParseInt(c.DefaultQuery("limit", "10"), 10, 64)
+	
+	// Validate pagination params with bounds
+	page, err := strconv.ParseInt(c.DefaultQuery("page", "1"), 10, 64)
+	if err != nil || page < 1 {
+		page = 1
+	}
+	if page > 1000 {
+		page = 1000 // Max 1000 pages
+	}
+	
+	limit, err := strconv.ParseInt(c.DefaultQuery("limit", "10"), 10, 64)
+	if err != nil || limit < 1 {
+		limit = 10
+	}
+	if limit > 100 {
+		limit = 100 // Max 100 items per page (DoS protection)
+	}
 
 	comments, err := h.interactionService.GetComments(c.Request.Context(), beatID, page, limit)
 	if err != nil {
@@ -163,7 +178,8 @@ func (h *Handler) deleteComment(c *gin.Context) {
 }
 
 func (h *Handler) getLikedBeatIDs(c *gin.Context) {
-	userID := c.Param("id")
+	// Security fix: Use userID from JWT token, not from path parameter
+	userID := middleware.GetUserID(c)
 	ids, err := h.interactionService.GetLikedBeatIDs(c.Request.Context(), userID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

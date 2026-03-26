@@ -37,8 +37,6 @@ func (r *BeatRepository) Create(ctx context.Context, beat *models.Beat) (string,
 		return "", err
 	}
 
-    fmt.Printf("Indexing data: %s\n", string(data))
-
 	req := esapi.IndexRequest{
 		Index:      beatsIndex,
 		DocumentID: beat.ID,
@@ -83,13 +81,16 @@ func (r *BeatRepository) FindByID(ctx context.Context, id string) (*models.Beat,
 	}
 
 	var d struct {
+		Id     string      `json:"_id"`
 		Source models.Beat `json:"_source"`
 	}
 	if err := json.NewDecoder(res.Body).Decode(&d); err != nil {
 		return nil, err
 	}
 
-	return &d.Source, nil
+	beat := d.Source
+	beat.ID = d.Id
+	return &beat, nil
 }
 
 func (r *BeatRepository) Search(ctx context.Context, query string) ([]*models.Beat, error) {
@@ -133,6 +134,7 @@ func (r *BeatRepository) Search(ctx context.Context, query string) ([]*models.Be
 	var r_es struct {
 		Hits struct {
 			Hits []struct {
+				Id     string      `json:"_id"`
 				Source models.Beat `json:"_source"`
 			} `json:"hits"`
 		} `json:"hits"`
@@ -144,6 +146,7 @@ func (r *BeatRepository) Search(ctx context.Context, query string) ([]*models.Be
 	beats := make([]*models.Beat, 0, len(r_es.Hits.Hits))
 	for _, hit := range r_es.Hits.Hits {
 		beat := hit.Source
+		beat.ID = hit.Id // Extract ID from hit
 		beats = append(beats, &beat)
 	}
 

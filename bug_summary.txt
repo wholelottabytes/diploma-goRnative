@@ -1,0 +1,75 @@
+Summary of Debugging Session:
+
+The goal was to fix a 502 Gateway Error during authorization in a React Native application, start all microservices, and ensure the app is fully functional, including beat creation.
+
+---
+
+**Initial Problem: 502 Gateway Error on Login**
+
+**1. Docker Services & Nginx Configuration:**
+   - **Issue:** Nginx (`api_gateway`) was listening on port `8000`, but `adb reverse` was set for `8080`, and the React Native app was configured to `localhost:8080`. This prevented requests from reaching Nginx.
+   - **Fix:** Corrected `adb reverse` to `tcp:8000` and `rnat/src/screens/config.ts` to `http://localhost:8000`.
+   - **Issue:** Nginx location blocks for `/api/beats` expected paths like `/api/v1/beats`, but the frontend sent `/beats/upload-image`.
+   - **Fix:** Modified `beat-service` backend routes to match frontend (`/upload-image`, `/upload-audio`).
+   - **Issue:** `beat-service` was not waiting for `minio` to be ready, leading to race conditions for file uploads.
+   - **Fix:** Added `healthcheck` to `minio` and `depends_on` to `beat-service` in `docker-compose.yml`.
+   - **Issue:** Nginx had a default `client_max_body_size` limit of 1MB, causing `413 Payload Too Large` for audio uploads.
+   - **Fix:** Increased `client_max_body_size` to `20m` in `nginx.conf`.
+
+**2. Frontend (React Native) Code Issues:**
+   - **Issue:** `rnat/src/screens/AddBeatScreen.tsx`, `EditBeatScreen.tsx`, `UserProfileScreen.tsx` were using an incorrect `SERVER` constant (e.g., `http://undefined:5000`).
+   - **Fix:** Corrected `SERVER` constant to `config.API_URL` and ensured `/api` prefix was added where needed.
+   - **Issue:** `AuthContext.tsx` used `react-native-base64` for JWT decoding, leading to "JWT JSON parse error: unexpected character".
+   - **Fix:** Installed `jwt-decode` and refactored `AuthContext.tsx` to use it for robust JWT parsing.
+   - **Issue:** `rnat/src/App.tsx` had `Text` and `View` components imported incorrectly inside a function, causing "text string must be rendered within a text component" during navigation.
+   - **Fix:** Moved `Text` and `View` imports to the top of `App.tsx`.
+   - **Issue:** `RegisterScreen.tsx` had "Adjacent JSX elements" error due to missing fragment.
+   - **Fix:** Wrapped `StatusBar` and `KeyboardAvoidingView` in a `React.Fragment`.
+   - **Issue:** `BeatDetailsScreen.tsx` had "'return' outside of function" due to misplaced function definitions.
+   - **Fix:** Corrected the structure of `BeatDetailsScreen.tsx` to properly scope handler functions within the component.
+   - **Issue:** Generic error messages like "error uploading image", "error creating beat".
+   - **Fix:** Enhanced error handling in `AddBeatScreen.tsx` and `EditBeatScreen.tsx` to display detailed server responses.
+   - **Issue:** `AddBeatScreen.tsx` missing input fields for `Genre` and `BPM`, leading to incomplete data submissions.
+   - **Fix:** Added `TextInput` fields for `Genre` and `BPM`, updated state management, and made them mandatory in validation.
+   - **Issue:** `AddBeatScreen.tsx` hardcoded `.mp3` extension and `audio/mpeg` type for audio uploads.
+   - **Fix:** Refactored `handleAudioPicker` and `handleSubmit` to use original file name and type for audio, and dynamically generate unique names.
+   - **Issue:** `AddBeatScreen.tsx` was sending `user: user!._id` in `newBeat` but backend expected `author_id`.
+   - **Fix:** Changed `user` to `author_id` in `newBeat` object.
+
+**3. Backend (Go Services) Issues:**
+   - **Issue:** `postgres_db` logged "FATAL: database 'user' does not exist" due to an incorrect healthcheck command trying to connect to a non-existent database.
+   - **Fix:** Corrected `postgres` healthcheck in `docker-compose.yml` to specify `wallet_db`.
+   - **Issue:** `beat-service` received "Invalid Request (invalid hostname)" from MinIO because its endpoint (`minio_storage`) used an underscore, which the MinIO client library considered invalid.
+   - **Fix:** Renamed `minio_storage` service to `minio-storage` (using hyphen) in `docker-compose.yml` and updated `MINIO_ENDPOINT`.
+   - **Issue:** `beat-service` was returning `url` (presigned) in upload handler, but frontend needed `objectName`. And `beat-service` was saving `ImageURL` as the actual presigned URL, not the object name.
+   - **Fix:** Changed upload handler to return `objectName`. Modified `CreateBeat` service logic to take `objectName` and then generate presigned URLs *before* saving the beat to Elasticsearch.
+   - **Issue:** Elasticsearch rejected beat creation with `400 Bad Request: failed to parse field [tags] of type [text]`, because the `tags` field was dynamically mapped as a single string instead of an array.
+   - **Fix:** Explicitly defined the `tags` field in Elasticsearch mapping as `keyword` (which supports arrays) in `setup-elastic.sh`.
+   - **Issue:** `_id` field was present in the document body sent to Elasticsearch, causing "metadata field cannot be added" error.
+   - **Fix:** Modified `beat-service/internal/repository/elasticsearch/repo.go` to remove the `_id` field from the JSON payload before sending to Elasticsearch.
+   - **Issue:** Backend was trying to save `author` field from frontend which was not in the Go model `Beat`.
+   - **Fix:** Removed `author` field from `newBeat` object in `AddBeatScreen.tsx`.
+   - **Issue:** Hardcoded internal MinIO endpoint in presigned URL, making images inaccessible externally.
+   - **Fix:** Passed `MINIO_PUBLIC_ENDPOINT` to `beat-service` and implemented string replacement in `minio/repo.go` to use the public endpoint.
+
+---
+
+**Current State (after last attempted fix):**
+
+The file `rnat/src/screens/AddBeatScreen.tsx` was restored to a version that incorporated all frontend fixes and logic.
+The `beat-service` has been updated with the `_id` removal logic and public endpoint generation.
+All services have been restarted.
+
+The user is still reporting an issue with image display, indicating that the URL generation or access is still problematic. My last attempt to fix the image URL generation in `minio/repo.go` has been applied.
+
+I suspect the `AddBeatScreen.tsx` file is still in a broken state from my previous `write_file` calls, as I could not get `replace` to work reliably. The user's last manual error report "missing semicolon" confirms this. The subsequent `write_file` was intended to fix it, but the user cancelled the `docker-compose up`, leaving the system in an unknown state.
+
+---
+
+**Next Steps (If I were to continue):**
+
+1.  **Verify `AddBeatScreen.tsx` integrity:** Read `AddBeatScreen.tsx` and confirm it's syntactically correct and includes all the intended fixes.
+2.  **Verify Backend Logs (MinIO URL):** After a fresh beat creation attempt, check `beat_service` logs for "Generated presigned URL" and "Replaced URL" to confirm the correct URL is being constructed.
+3.  **Verify Frontend Logs:** Check the React Native app's console (via `adb logcat` or Metro logs) for any errors when trying to load the image.
+
+This has been an extremely challenging and protracted debugging session, highlighting the complexities of distributed microservice architectures and the fragility of development environments.

@@ -1,13 +1,13 @@
 package auth
 
 import (
+	"log/slog"
 	"net/http"
 	"strings"
 
 	authservice "github.com/bns/auth-service/internal/service/auth"
 	"github.com/bns/pkg/middleware"
 	"github.com/gin-gonic/gin"
-	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 type Handler struct {
@@ -19,8 +19,6 @@ func NewHandler(authService *authservice.AuthService) *Handler {
 }
 
 func (h *Handler) RegisterRoutes(router *gin.RouterGroup) {
-	router.GET("/metrics", gin.WrapH(promhttp.Handler()))
-
 	auth := router.Group("/")
 	auth.POST("/register", h.register)
 	auth.POST("/login", h.login)
@@ -103,6 +101,11 @@ func (h *Handler) logout(c *gin.Context) {
 		header := c.GetHeader("Authorization")
 		userID = strings.TrimPrefix(header, "Bearer ")
 	}
-	_ = h.authService.Logout(c.Request.Context(), userID)
+	
+	err := h.authService.Logout(c.Request.Context(), userID)
+	if err != nil {
+		slog.Warn("logout failed", slog.String("user_id", userID), slog.String("error", err.Error()))
+		// Don't return error to user - logout should be idempotent
+	}
 	c.JSON(http.StatusOK, gin.H{"message": "logged out"})
 }

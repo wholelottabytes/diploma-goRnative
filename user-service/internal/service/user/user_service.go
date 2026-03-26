@@ -119,7 +119,12 @@ func (s *UserService) Register(ctx context.Context, input RegisterUserInput) (*m
 	}
 
 	slog.Info("user created successfully, publishing event", slog.String("userID", user.ID))
+	
+	// Use context with timeout for background goroutine
 	go func() {
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+		
 		var role string
 		if len(user.Roles) > 0 {
 			role = user.Roles[0]
@@ -132,7 +137,7 @@ func (s *UserService) Register(ctx context.Context, input RegisterUserInput) (*m
 			Role:         role,
 			RegisteredAt: timestamppb.New(user.CreatedAt),
 		}
-		if err := s.producer.Publish(context.Background(), user.ID, event); err != nil {
+		if err := s.producer.Publish(ctx, user.ID, event); err != nil {
 			slog.Error("failed to publish user_registered event", slog.String("error", err.Error()), slog.String("userID", user.ID))
 		} else {
 			slog.Info("published user_registered event", slog.String("userID", user.ID))

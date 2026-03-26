@@ -61,12 +61,12 @@ func SeedData(beatService *beatservice.BeatService, beatRepo beatservice.BeatRep
 			},
 		}
 
-		for _, beat := range sampleBeats {
-			_, err := beatService.CreateBeat(context.Background(), &beat)
+		for _, beatData := range sampleBeats {
+			createdBeat, err := beatService.CreateBeat(context.Background(), &beatData)
 			if err != nil {
-				slog.Error("failed to seed beat", "title", beat.Title, "error", err)
+				slog.Error("failed to seed beat", "title", beatData.Title, "error", err)
 			} else {
-				slog.Info("seeded beat successfully", "title", beat.Title)
+				slog.Info("seeded beat successfully", "title", beatData.Title, "id", createdBeat.ID)
 			}
 		}
 	} else {

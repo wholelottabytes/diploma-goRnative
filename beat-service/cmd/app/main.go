@@ -68,7 +68,7 @@ func main() {
 	}()
 
 	beatRepo := elasticsearch.New(esClient)
-	fileRepo := minio.New(minioClient)
+	fileRepo := minio.New(minioClient, cfg)
 
 	userClient, err := user.NewClient(cfg.Clients.UserServiceAddr)
 	if err != nil {

@@ -21,15 +21,12 @@ func NewHandler(walletService *walletservice.WalletService, jwtSecret string) *H
 }
 
 func (h *Handler) RegisterRoutes(router *gin.RouterGroup) {
-	wallets := router.Group("/wallet")
-
-	wallets.GET("/health", func(c *gin.Context) { c.Status(http.StatusOK) })
-
-	wallets.Use(middleware.Auth(h.jwtSecret))
+	auth := router.Group("")
+	auth.Use(middleware.Auth(h.jwtSecret))
 	{
-		wallets.GET("/balance", h.getBalance)
-		wallets.POST("/topup", h.topUp)
-		wallets.GET("/transactions", h.getTransactions)
+		auth.GET("/balance", h.getBalance)
+		auth.POST("/topup", h.topUp)
+		auth.GET("/transactions", h.getTransactions)
 	}
 }
 

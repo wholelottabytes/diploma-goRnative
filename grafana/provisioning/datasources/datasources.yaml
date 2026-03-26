@@ -7,29 +7,32 @@ datasources:
     url: http://prometheus:9090
     uid: prometheus
     isDefault: true
-    editable: true
+    editable: false
+    jsonData:
+      timeInterval: "15s"
+      httpMethod: POST
 
   - name: Elasticsearch
     type: elasticsearch
     access: proxy
     url: http://elasticsearch:9200
     uid: elasticsearch
-    database: "[filebeat-*]YYYY.MM.DD"
+    editable: false
     jsonData:
       timeField: "@timestamp"
       esVersion: "8.0.0"
       index: "filebeat-*"
-    editable: true
+      maxConcurrentShardRequests: 5
 
   - name: ClickHouse
     type: grafana-clickhouse-datasource
     access: proxy
-    url: clickhouse_db:8123
+    url: http://clickhouse_db:8123
     uid: clickhouse
+    editable: false
     jsonData:
       server: clickhouse_db
       port: 8123
       username: user
       password: password
       defaultDatabase: analytics
-    editable: true

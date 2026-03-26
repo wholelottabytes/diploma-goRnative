@@ -1,12 +1,15 @@
 package rest
 
 import (
+	"net/http"
+
 	"github.com/bns/pkg/metrics"
 	"github.com/bns/pkg/middleware"
 	"github.com/bns/wallet-service/internal/service"
 	"github.com/bns/wallet-service/internal/transport/rest/wallet"
 	"github.com/gin-gonic/gin"
 	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 type Handler struct {
@@ -27,7 +30,15 @@ func NewHandler(services *service.Services) *Handler {
 func (h *Handler) RegisterRoutes(router *gin.Engine) {
 	router.Use(middleware.Metrics(h.requestsTotal, h.requestDuration))
 
+	// Metrics endpoint at root level for Prometheus
+	router.GET("/metrics", gin.WrapH(promhttp.Handler()))
+
 	apiV1 := router.Group("/api/v1")
+
+	// Health check
+	apiV1.GET("/health", func(c *gin.Context) {
+		c.Status(http.StatusOK)
+	})
 
 	walletHandler := wallet.NewHandler(h.services.Wallet, h.services.Config.App.JWTSecret)
 	walletHandler.RegisterRoutes(apiV1)

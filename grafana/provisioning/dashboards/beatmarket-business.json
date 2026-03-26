@@ -1,0 +1,143 @@
+{
+  "dashboard": {
+    "id": null,
+    "uid": "beatmarket-business",
+    "title": "BeatMarket - Business Analytics",
+    "tags": ["beatmarket", "business"],
+    "timezone": "browser",
+    "schemaVersion": 38,
+    "version": 1,
+    "refresh": "30s",
+    "time": {"from": "now-1h", "to": "now"},
+    "panels": [
+      {
+        "id": 1,
+        "gridPos": {"h": 4, "w": 24, "x": 0, "y": 0},
+        "type": "text",
+        "title": "ℹ️ Business Metrics Info",
+        "options": {
+          "content": "Business metrics (views, likes, purchases) will appear here once implemented in the services.\n\n**Required metrics:**\n- `beat_views_total` - Beat play counts\n- `beat_likes_total` - Beat like counts  \n- `beat_purchases_total` - Beat purchase counts\n- `user_revenue_total` - Revenue per user\n\n**Current status:** ⏳ Not yet implemented",
+          "mode": "markdown"
+        }
+      },
+      {
+        "id": 2,
+        "gridPos": {"h": 6, "w": 6, "x": 0, "y": 4},
+        "type": "stat",
+        "title": "Total Beats (from HTTP)",
+        "targets": [
+          {
+            "expr": "count(beat_info) if count(beat_info) > 0 else 0",
+            "legendFormat": "Beats",
+            "refId": "A",
+            "datasource": {"type": "prometheus", "uid": "prometheus"}
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {"mode": "continuous-BlYlRd"},
+            "unit": "short",
+            "noValue": "0"
+          }
+        }
+      },
+      {
+        "id": 3,
+        "gridPos": {"h": 6, "w": 6, "x": 6, "y": 4},
+        "type": "stat",
+        "title": "Beat Views",
+        "targets": [
+          {
+            "expr": "sum(beat_views_total)",
+            "legendFormat": "Views",
+            "refId": "A",
+            "datasource": {"type": "prometheus", "uid": "prometheus"}
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {"mode": "continuous-BlYlRd"},
+            "unit": "short",
+            "noValue": "0"
+          }
+        }
+      },
+      {
+        "id": 4,
+        "gridPos": {"h": 6, "w": 6, "x": 12, "y": 4},
+        "type": "stat",
+        "title": "Beat Likes",
+        "targets": [
+          {
+            "expr": "sum(beat_likes_total)",
+            "legendFormat": "Likes",
+            "refId": "A",
+            "datasource": {"type": "prometheus", "uid": "prometheus"}
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {"mode": "continuous-BlYlRd"},
+            "unit": "short",
+            "noValue": "0"
+          }
+        }
+      },
+      {
+        "id": 5,
+        "gridPos": {"h": 6, "w": 6, "x": 18, "y": 4},
+        "type": "stat",
+        "title": "Revenue (USD)",
+        "targets": [
+          {
+            "expr": "sum(beat_purchases_total) * 20",
+            "legendFormat": "Revenue",
+            "refId": "A",
+            "datasource": {"type": "prometheus", "uid": "prometheus"}
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {"mode": "continuous-BlYlRd"},
+            "unit": "currencyUSD",
+            "noValue": "0"
+          }
+        }
+      },
+      {
+        "id": 6,
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 10},
+        "type": "timeseries",
+        "title": "HTTP Request Rate (Real)",
+        "targets": [
+          {
+            "expr": "rate(http_requests_total[1m])",
+            "legendFormat": "{{job}} - {{method}}",
+            "refId": "A",
+            "datasource": {"type": "prometheus", "uid": "prometheus"}
+          }
+        ]
+      },
+      {
+        "id": 7,
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 10},
+        "type": "timeseries",
+        "title": "Active Users (by login rate)",
+        "targets": [
+          {
+            "expr": "sum(rate(user_logins_total[5m])) if count(user_logins_total) > 0 else 0",
+            "legendFormat": "Users/min",
+            "refId": "A",
+            "datasource": {"type": "prometheus", "uid": "prometheus"}
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "noValue": "0"
+          }
+        }
+      }
+    ]
+  },
+  "overwrite": true
+}

@@ -1,0 +1,120 @@
+{
+  "dashboard": {
+    "id": null,
+    "uid": "beatmarket-user",
+    "title": "BeatMarket - User Statistics",
+    "tags": ["beatmarket", "user"],
+    "timezone": "browser",
+    "schemaVersion": 38,
+    "version": 1,
+    "refresh": "30s",
+    "time": {"from": "now-1h", "to": "now"},
+    "panels": [
+      {
+        "id": 1,
+        "gridPos": {"h": 4, "w": 24, "x": 0, "y": 0},
+        "type": "text",
+        "title": "📊 User & Beat Statistics",
+        "options": {
+          "content": "This dashboard shows user and beat statistics. Business metrics (views, likes, purchases) require implementation in the services.\n\n**Currently available:** HTTP request metrics, service health\n**Coming soon:** Beat views, likes, purchases, user revenue",
+          "mode": "markdown"
+        }
+      },
+      {
+        "id": 2,
+        "gridPos": {"h": 6, "w": 8, "x": 0, "y": 4},
+        "type": "timeseries",
+        "title": "Auth Service - Logins (HTTP requests)",
+        "targets": [
+          {
+            "expr": "rate(http_requests_total{job=\"auth-service\", path=~\".*login.*\"}[1m])",
+            "legendFormat": "Logins/sec",
+            "refId": "A",
+            "datasource": {"type": "prometheus", "uid": "prometheus"}
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "gridPos": {"h": 6, "w": 8, "x": 8, "y": 4},
+        "type": "timeseries",
+        "title": "User Service - Requests",
+        "targets": [
+          {
+            "expr": "rate(http_requests_total{job=\"user-service\"}[1m])",
+            "legendFormat": "Requests/sec",
+            "refId": "A",
+            "datasource": {"type": "prometheus", "uid": "prometheus"}
+          }
+        ]
+      },
+      {
+        "id": 4,
+        "gridPos": {"h": 6, "w": 8, "x": 16, "y": 4},
+        "type": "timeseries",
+        "title": "Beat Service - Requests",
+        "targets": [
+          {
+            "expr": "rate(http_requests_total{job=\"beat-service\"}[1m])",
+            "legendFormat": "Requests/sec",
+            "refId": "A",
+            "datasource": {"type": "prometheus", "uid": "prometheus"}
+          }
+        ]
+      },
+      {
+        "id": 5,
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 10},
+        "type": "timeseries",
+        "title": "Response Time by Service",
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, rate(http_request_duration_seconds_bucket{job=~\"auth-service|user-service|beat-service\"}[1m]))",
+            "legendFormat": "{{job}} (p95)",
+            "refId": "A",
+            "datasource": {"type": "prometheus", "uid": "prometheus"}
+          }
+        ]
+      },
+      {
+        "id": 6,
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 10},
+        "type": "timeseries",
+        "title": "Error Rate by Service",
+        "targets": [
+          {
+            "expr": "rate(http_requests_total{status=~\"5..\", job=~\"auth-service|user-service|beat-service\"}[1m])",
+            "legendFormat": "{{job}} errors",
+            "refId": "A",
+            "datasource": {"type": "prometheus", "uid": "prometheus"}
+          }
+        ]
+      },
+      {
+        "id": 7,
+        "gridPos": {"h": 6, "w": 24, "x": 0, "y": 18},
+        "type": "table",
+        "title": "Service Endpoints Activity",
+        "targets": [
+          {
+            "expr": "rate(http_requests_total[5m])",
+            "format": "table",
+            "instant": true,
+            "refId": "A",
+            "datasource": {"type": "prometheus", "uid": "prometheus"}
+          }
+        ],
+        "transformations": [
+          {
+            "id": "organize",
+            "options": {
+              "excludeByName": {"Time": true, "__name__": true, "instance": true},
+              "renameByName": {"job": "Service", "method": "Method", "path": "Path", "Value": "Req/sec"}
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "overwrite": true
+}

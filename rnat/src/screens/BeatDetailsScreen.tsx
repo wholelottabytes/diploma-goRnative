@@ -51,6 +51,8 @@ const BeatDetailsScreen = ({ route, navigation }: BeatDetailsScreenProps) => {
 
   const floatAnim = useRef(new Animated.Value(0)).current;
   const [isArtworkLoaded, setIsArtworkLoaded] = useState(false);
+  const [imageLoadError, setImageLoadError] = useState(false);
+  const [audioLoadError, setAudioLoadError] = useState(false);
   const videoRef = useRef<any | null>(null);
 
   useEffect(() => {
@@ -92,6 +94,8 @@ const BeatDetailsScreen = ({ route, navigation }: BeatDetailsScreenProps) => {
   }, []);
 
   const fetchRatings = useCallback(async () => {
+    if (!beat?.id) return;
+    
     try {
       const response = await interactionApi.getRating(beat.id);
       setAverageRating(response.data.average);
@@ -104,6 +108,8 @@ const BeatDetailsScreen = ({ route, navigation }: BeatDetailsScreenProps) => {
   }, [beat.id]);
 
   const fetchComments = useCallback(async () => {
+    if (!beat?.id) return;
+    
     setIsLoadingComments(true);
     try {
       const response = await interactionApi.getComments(beat.id);
@@ -249,6 +255,22 @@ const BeatDetailsScreen = ({ route, navigation }: BeatDetailsScreenProps) => {
 
   const handleLoad = (data: OnLoadData) => {
     setDuration(data.duration);
+    setAudioLoadError(false);
+  };
+
+  const handleError = () => {
+    console.error('Error loading audio:', beat.audio_url);
+    setAudioLoadError(true);
+    Alert.alert(
+      'Audio Loading Error',
+      'Failed to load audio file. Please check:\n• Internet connection\n• Server availability\n• URL correctness',
+      [{ text: 'OK' }]
+    );
+  };
+
+  const handleImageError = () => {
+    console.error('Error loading image:', beat.image_url);
+    setImageLoadError(true);
   };
 
   const handleProgress = (data: OnProgressData) => {
@@ -284,6 +306,7 @@ const BeatDetailsScreen = ({ route, navigation }: BeatDetailsScreenProps) => {
           source={{ uri: beat.audio_url }}
           paused={!isPlaying}
           onLoad={handleLoad}
+          onError={handleError}
           onProgress={handleProgress}
           onEnd={handleEnd}
           style={{ width: 0, height: 0 }}
@@ -292,20 +315,27 @@ const BeatDetailsScreen = ({ route, navigation }: BeatDetailsScreenProps) => {
         />
 
         <View style={styles.artworkContainer}>
-          <Animated.Image
-            source={{ uri: beat.image_url }}
-            style={[
-              styles.artwork,
-              {
-                transform: [
-                  { rotate: floatInterpolation },
-                  { translateY: translateYInterpolation },
-                ],
-                opacity: isArtworkLoaded ? 1 : 0,
-              },
-            ]}
-            onLoad={() => setIsArtworkLoaded(true)}
-          />
+          {imageLoadError ? (
+            <View style={[styles.artwork, styles.errorPlaceholder]}>
+              <Text style={styles.errorText}>Image{'\n'}Not Loaded</Text>
+            </View>
+          ) : (
+            <Animated.Image
+              source={{ uri: beat.image_url }}
+              style={[
+                styles.artwork,
+                {
+                  transform: [
+                    { rotate: floatInterpolation },
+                    { translateY: translateYInterpolation },
+                  ],
+                  opacity: isArtworkLoaded ? 1 : 0,
+                },
+              ]}
+              onLoad={() => setIsArtworkLoaded(true)}
+              onError={handleImageError}
+            />
+          )}
         </View>
 
         <View style={styles.content}>
@@ -566,6 +596,17 @@ const styles = StyleSheet.create({
     height: width * 0.7,
     borderRadius: 20,
     backgroundColor: '#333',
+  },
+  errorPlaceholder: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: '#ff4444',
+  },
+  errorText: {
+    fontSize: 16,
+    color: '#ff4444',
+    textAlign: 'center',
   },
   content: {
     flex: 1,

@@ -224,12 +224,16 @@ services:
     environment:
       - GF_SECURITY_ADMIN_USER=admin
       - GF_SECURITY_ADMIN_PASSWORD=admin
-      - GF_INSTALL_PLUGINS=grafana-clickhouse-datasource
+      - GF_AUTH_ANONYMOUS_ENABLED=false
+      - GF_USERS_ALLOW_SIGN_UP=false
     volumes:
       - grafana_data:/var/lib/grafana
-      - ./grafana/provisioning:/etc/grafana/provisioning
+      - ./grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards:ro
+      - ./grafana/provisioning/datasources:/etc/grafana/provisioning/datasources:ro
     networks:
       - backend
+    depends_on:
+      - prometheus
 
   # ─── API Gateway ─────────────────────────────────────────────────
   nginx:
@@ -258,7 +262,7 @@ services:
     container_name: auth_service
     environment:
       - REDIS_ADDR=redis_cache:6379
-      - JWT_SECRET=super-secret-jwt-key-beatmarket
+      - JWT_SECRET=${JWT_SECRET:-change-me-in-production-use-env-var}
       - USER_SERVICE_ADDR=user_service:9090
       - HTTP_PORT=:8080
       - GRPC_PORT=:9090
@@ -277,7 +281,7 @@ services:
     environment:
       - MONGO_URI=mongodb://user:password@mongo_db:27017/?authSource=admin
       - MONGO_DB_NAME=beatmarket
-      - JWT_SECRET=super-secret-jwt-key-beatmarket
+      - JWT_SECRET=${JWT_SECRET:-change-me-in-production-use-env-var}
       - KAFKA_BROKERS=kafka:9092
       - HTTP_PORT=:8080
       - GRPC_PORT=:9090
@@ -296,10 +300,11 @@ services:
     environment:
       - ELASTICSEARCH_ADDR=http://elasticsearch:9200
       - MINIO_ENDPOINT=minio-storage:9000
+      - MINIO_PUBLIC_ENDPOINT=http://192.168.8.13:9010
       - MINIO_ACCESS_KEY_ID=minioadmin
       - MINIO_SECRET_ACCESS_KEY=minioadmin
       - MINIO_USE_SSL=false
-      - JWT_SECRET=super-secret-jwt-key-beatmarket
+      - JWT_SECRET=${JWT_SECRET:-change-me-in-production-use-env-var}
       - KAFKA_BROKERS=kafka:9092
       - HTTP_PORT=:8080
       - GRPC_PORT=:9090
@@ -321,7 +326,7 @@ services:
     environment:
       - MONGO_URI=mongodb://user:password@mongo_db:27017/?authSource=admin
       - MONGO_DB_NAME=beatmarket
-      - JWT_SECRET=super-secret-jwt-key-beatmarket
+      - JWT_SECRET=${JWT_SECRET:-change-me-in-production-use-env-var}
       - KAFKA_BROKERS=kafka:9092
       - HTTP_PORT=:8080
       - GRPC_PORT=:9090
@@ -342,7 +347,7 @@ services:
       - MONGO_DATABASE=beatmarket
       - WALLET_SERVICE_ADDR=wallet_service:9090
       - BEAT_SERVICE_ADDR=beat_service:9090
-      - JWT_SECRET=super-secret-jwt-key-beatmarket
+      - JWT_SECRET=${JWT_SECRET:-change-me-in-production-use-env-var}
       - KAFKA_BROKERS=kafka:9092
       - HTTP_PORT=:8080
       - GRPC_PORT=:9090
@@ -361,10 +366,10 @@ services:
     environment:
       - PG_HOST=postgres_db
       - PG_PORT=5432
-      - PG_USER=user
-      - PG_PASSWORD=password
+      - PG_USER=${POSTGRES_USER:-user}
+      - PG_PASSWORD=${POSTGRES_PASSWORD:-password}
       - PG_DBNAME=wallet_db
-      - JWT_SECRET=super-secret-jwt-key-beatmarket
+      - JWT_SECRET=${JWT_SECRET:-change-me-in-production-use-env-var}
       - HTTP_PORT=:8080
       - GRPC_PORT=:9090
     depends_on:
@@ -382,10 +387,11 @@ services:
     environment:
       - CLICKHOUSE_ADDRS=clickhouse_db:9000
       - CLICKHOUSE_DATABASE=analytics
-      - CLICKHOUSE_USER=user
-      - CLICKHOUSE_PASSWORD=password
+      - CLICKHOUSE_USER=${CLICKHOUSE_USER:-user}
+      - CLICKHOUSE_PASSWORD=${CLICKHOUSE_PASSWORD:-password}
       - KAFKA_BROKERS=kafka:9092
       - HTTP_PORT=:8080
+      - JWT_SECRET=${JWT_SECRET:-change-me-in-production-use-env-var}
     depends_on:
       clickhouse:
         condition: service_healthy

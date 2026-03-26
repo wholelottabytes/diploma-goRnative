@@ -1,9 +1,11 @@
 package beat
 
 import (
+	"fmt"
 	"log/slog"
 	"net/http"
 	"path/filepath"
+	"strings"
 
 	"github.com/bns/beat-service/internal/models"
 	beatservice "github.com/bns/beat-service/internal/service/beat"
@@ -82,6 +84,32 @@ func (h *Handler) createBeat(c *gin.Context) {
 	var beat models.Beat
 	if err := c.ShouldBindJSON(&beat); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	// Validate required fields
+	if beat.Title == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "title is required"})
+		return
+	}
+	if len(beat.Title) > 200 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "title must be less than 200 characters"})
+		return
+	}
+	if beat.Genre == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "genre is required"})
+		return
+	}
+	if beat.BPM <= 0 || beat.BPM > 300 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "BPM must be between 1 and 300"})
+		return
+	}
+	if beat.Price < 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "price cannot be negative"})
+		return
+	}
+	if beat.Price > 10000 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "price cannot exceed 10000"})
 		return
 	}
 
@@ -172,6 +200,39 @@ func (h *Handler) handleFileUpload(c *gin.Context, bucket string) {
 		return
 	}
 
+	// Validate file size (max 10MB)
+	if file.Size > 10*1024*1024 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "file size exceeds 10MB limit"})
+		return
+	}
+
+	// Validate file type by extension
+	ext := strings.ToLower(filepath.Ext(file.Filename))
+	allowedAudio := []string{".mp3", ".wav", ".flac", ".ogg", ".m4a"}
+	allowedImages := []string{".jpg", ".jpeg", ".png", ".gif", ".webp"}
+	
+	valid := false
+	if bucket == beatservice.ImagesBucket {
+		for _, e := range allowedImages {
+			if ext == e {
+				valid = true
+				break
+			}
+		}
+	} else if bucket == beatservice.AudioBucket {
+		for _, e := range allowedAudio {
+			if ext == e {
+				valid = true
+				break
+			}
+		}
+	}
+	
+	if !valid {
+		c.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("file type %s not allowed", ext)})
+		return
+	}
+
 	f, err := file.Open()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -179,7 +240,6 @@ func (h *Handler) handleFileUpload(c *gin.Context, bucket string) {
 	}
 	defer f.Close()
 
-	ext := filepath.Ext(file.Filename)
 	objectName, err := h.beatService.UploadFile(c.Request.Context(), bucket, f, file.Size, ext)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to upload file"})
@@ -187,7 +247,7 @@ func (h *Handler) handleFileUpload(c *gin.Context, bucket string) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"url": objectName})
+	c.JSON(http.StatusOK, gin.H{"objectName": objectName})
 }
 
 type batchRequest struct {

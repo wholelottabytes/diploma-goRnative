@@ -130,8 +130,8 @@ const AddBeatScreen: React.FC<any> = ({ navigation }) => {
         genre,
         bpm: parseInt(bpm, 10),
         tags: tags.split(',').map(t => t.trim()),
-        imageUrl: imgJson.url,
-        audioUrl: audioJson.url,
+        imageUrl: imgJson.objectName,
+        audioUrl: audioJson.objectName,
         author_id: user!._id,
       };
 

@@ -7,6 +7,7 @@ import (
 	"github.com/bns/pkg/middleware"
 	"github.com/gin-gonic/gin"
 	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 type Handler struct {
@@ -26,6 +27,10 @@ func NewHandler(services *service.Services) *Handler {
 
 func (h *Handler) RegisterRoutes(router *gin.Engine) {
 	router.Use(middleware.Metrics(h.requestsTotal, h.requestDuration))
+	
+	// Metrics endpoint at root level for Prometheus
+	router.GET("/metrics", gin.WrapH(promhttp.Handler()))
+	
 	apiV1 := router.Group("/api/v1")
 
 	// Health check
