@@ -1,9 +1,10 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { ScrollView, StyleSheet, Alert, View } from 'react-native';
-import { TextInput, Button, Title, Chip, Text } from 'react-native-paper';
+import { ScrollView, StyleSheet, Alert, View, StatusBar, SafeAreaView } from 'react-native';
+import { TextInput, Button, Chip, Text } from 'react-native-paper';
 import { AuthContext } from '../context/AuthContext';
 import config from './config';
 import { pick } from '@react-native-documents/picker';
+import { Colors, Typography, Spacing, BorderRadius } from '../theme/theme';
 
 const SERVER = config.API_URL + '/api';
 
@@ -161,46 +162,80 @@ const AddBeatScreen: React.FC<any> = ({ navigation }) => {
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Title style={styles.title}>Add New Beat</Title>
+    <SafeAreaView style={styles.safeArea}>
+      <StatusBar barStyle="light-content" backgroundColor="#0A0A0F" />
+      <ScrollView contentContainerStyle={styles.container}>
+        <Text style={styles.title}>Add New Beat</Text>
 
-      <TextInput label="Title" value={title} onChangeText={setTitle} style={styles.input} mode="outlined" />
-      <TextInput label="Author" value={author} style={styles.input} mode="outlined" editable={false} />
-      <TextInput label="Price" value={price} onChangeText={setPrice} style={styles.input} mode="outlined" keyboardType="numeric" />
-      <TextInput label="Description" value={description} onChangeText={setDescription} style={styles.input} mode="outlined" multiline />
-      <TextInput label="Genre" value={genre} onChangeText={setGenre} style={styles.input} mode="outlined" />
-      <TextInput label="BPM" value={bpm} onChangeText={setBpm} style={styles.input} mode="outlined" keyboardType="numeric" />
-      <TextInput label="Tags (comma separated)" value={tags} onChangeText={setTags} style={styles.input} mode="outlined" />
-      
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.tagsContainer}>
-        {tags.split(',').map((tag, index) => (
-          tag.trim() ? (
-            <Chip key={index} style={styles.tag} textStyle={styles.tagText}>{tag.trim()}</Chip>
-          ) : null
-        ))}
+        <TextInput 
+          label="Title" 
+          value={title} 
+          onChangeText={setTitle} 
+          style={styles.input} 
+          mode="outlined"
+          theme={{ colors: { primary: Colors.primary } }}
+          textColor={Colors.textPrimary}
+        />
+        <TextInput label="Author" value={author} style={styles.input} mode="outlined" editable={false} theme={{ colors: { primary: Colors.primary } }} textColor={Colors.textPrimary} />
+        <TextInput label="Price" value={price} onChangeText={setPrice} style={styles.input} mode="outlined" keyboardType="numeric" theme={{ colors: { primary: Colors.primary } }} textColor={Colors.textPrimary} />
+        <TextInput label="Description" value={description} onChangeText={setDescription} style={styles.input} mode="outlined" multiline theme={{ colors: { primary: Colors.primary } }} textColor={Colors.textPrimary} />
+        <TextInput label="BPM" value={bpm} onChangeText={setBpm} style={styles.input} mode="outlined" keyboardType="numeric" theme={{ colors: { primary: Colors.primary } }} textColor={Colors.textPrimary} />
+        <TextInput label="Tags (comma separated)" value={tags} onChangeText={setTags} style={styles.input} mode="outlined" theme={{ colors: { primary: Colors.primary } }} textColor={Colors.textPrimary} />
+
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.tagsContainer}>
+          {tags.split(',').map((tag, index) => (
+            tag.trim() ? (
+              <Chip key={index} style={styles.tag} textStyle={styles.tagText}>{tag.trim()}</Chip>
+            ) : null
+          ))}
+        </ScrollView>
+
+        <Button onPress={handleImagePicker} mode="contained" style={styles.button} color={Colors.primary}>Select Image</Button>
+        <TextInput label="Selected Image" value={imageFile?.name || ''} style={styles.input} mode="outlined" editable={false} theme={{ colors: { primary: Colors.primary } }} textColor={Colors.textPrimary} />
+
+        <Button onPress={handleAudioPicker} mode="contained" style={styles.button} color={Colors.primary}>Select Audio</Button>
+        <TextInput label="Selected Audio" value={audioFile?.name || ''} style={styles.input} mode="outlined" editable={false} theme={{ colors: { primary: Colors.primary } }} textColor={Colors.textPrimary} />
+
+        <Button mode="contained" onPress={handleSubmit} loading={loading} style={styles.submitButton} contentStyle={styles.buttonContent} color={Colors.primary}>Create Beat</Button>
       </ScrollView>
-
-      <Button onPress={handleImagePicker} mode="contained" style={styles.button}>Select Image</Button>
-      <TextInput label="Selected Image" value={imageFile?.name || ''} style={styles.input} mode="outlined" editable={false} />
-
-      <Button onPress={handleAudioPicker} mode="contained" style={styles.button}>Select Audio</Button>
-      <TextInput label="Selected Audio" value={audioFile?.name || ''} style={styles.input} mode="outlined" editable={false} />
-
-      <Button mode="contained" onPress={handleSubmit} loading={loading} style={styles.submitButton} contentStyle={styles.buttonContent}>Create Beat</Button>
-    </ScrollView>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: { flexGrow: 1, padding: 20, backgroundColor: '#fff' },
-  title: { textAlign: 'center', marginBottom: 20, fontSize: 24, color: 'black' },
-  input: { marginBottom: 15, backgroundColor: '#fff' },
-  button: { marginTop: 10, backgroundColor: '#000' },
-  submitButton: { marginTop: 20, backgroundColor: '#000' },
-  buttonContent: { paddingVertical: 10 },
-  tagsContainer: { flexDirection: 'row', flexWrap: 'wrap', marginBottom: 15 },
-  tag: { margin: 4, backgroundColor: '#e0e0e0' },
-  tagText: { color: '#000' },
+  safeArea: { flex: 1, backgroundColor: Colors.background },
+  container: { 
+    flexGrow: 1, 
+    padding: Spacing['2xl'], 
+    backgroundColor: Colors.background,
+    paddingTop: Spacing['4xl'],
+  },
+  title: { 
+    textAlign: 'center', 
+    marginBottom: Spacing['2xl'], 
+    fontSize: Typography['2xl'], 
+    fontWeight: Typography.bold,
+    color: Colors.textPrimary,
+  },
+  input: { 
+    marginBottom: Spacing.lg, 
+    backgroundColor: 'rgba(255,255,255,0.05)',
+  },
+  button: { 
+    marginTop: Spacing.sm, 
+    paddingVertical: Spacing.sm,
+  },
+  submitButton: { 
+    marginTop: Spacing['2xl'], 
+    paddingVertical: Spacing.base,
+  },
+  buttonContent: { paddingVertical: Spacing.sm },
+  tagsContainer: { paddingVertical: Spacing.sm },
+  tag: { 
+    backgroundColor: 'rgba(168,85,247,0.2)', 
+    marginRight: Spacing.xs,
+  },
+  tagText: { color: Colors.primary, fontSize: Typography.sm },
 });
 
 export default AddBeatScreen;

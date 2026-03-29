@@ -96,8 +96,12 @@ func (h *Handler) createBeat(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "title must be less than 200 characters"})
 		return
 	}
-	if beat.Genre == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "genre is required"})
+	if len(beat.Tags) == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "at least one tag is required"})
+		return
+	}
+	if len(beat.Tags) > 10 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "maximum 10 tags allowed"})
 		return
 	}
 	if beat.BPM <= 0 || beat.BPM > 300 {

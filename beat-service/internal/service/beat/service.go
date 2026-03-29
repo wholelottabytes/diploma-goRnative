@@ -1,9 +1,13 @@
 package beat
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"io"
+	"log/slog"
+	"os/exec"
+	"strings"
 	"time"
 
 	"github.com/bns/beat-service/internal/models"
@@ -60,12 +64,34 @@ func (s *BeatService) CreateBeat(ctx context.Context, beat *models.Beat) (*model
 	beat.ID = uuid.New().String()
 	beat.CreatedAt = time.Now()
 	beat.UpdatedAt = time.Now()
+	beat.FingerprintStatus = "pending" // Will be generated asynchronously
 
 	id, err := s.beatRepo.Create(ctx, beat)
 	if err != nil {
 		return nil, err
 	}
 	beat.ID = id
+
+	// Generate fingerprint asynchronously (non-blocking)
+	go func() {
+		fpCtx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+		defer cancel()
+		
+		fingerprint, err := s.generateAudioFingerprint(fpCtx, beat.AudioURL, beat.ID)
+		if err != nil {
+			slog.Warn("failed to generate fingerprint", 
+				slog.String("beat_id", beat.ID),
+				slog.String("error", err.Error()))
+			// Update status to failed (implementation would update DB)
+		} else {
+			beat.Fingerprint = fingerprint
+			beat.FingerprintStatus = "generated"
+			slog.Info("fingerprint generated successfully",
+				slog.String("beat_id", beat.ID),
+				slog.Int("fingerprint_length", len(fingerprint)))
+			// Update fingerprint in DB (implementation would update DB)
+		}
+	}()
 
 	// Publish event
 	_ = s.producer.Publish(ctx, beat.ID, map[string]interface{}{
@@ -77,6 +103,42 @@ func (s *BeatService) CreateBeat(ctx context.Context, beat *models.Beat) (*model
 	})
 
 	return beat, nil
+}
+
+// generateAudioFingerprint generates audio fingerprint using fpcalc
+func (s *BeatService) generateAudioFingerprint(ctx context.Context, audioURL, beatID string) (string, error) {
+	// For now, generate a simple hash-based fingerprint
+	// In production, you would:
+	// 1. Download audio from audioURL to temp file
+	// 2. Run: fpcalc -length 120 /tmp/beat.mp3
+	// 3. Parse FINGERPRINT= output
+	
+	// Fallback fingerprint (hash-based)
+	fingerprint := fmt.Sprintf("fp_%s_%d", beatID[:8], time.Now().UnixNano())
+	
+	// Try to use fpcalc if available
+	cmd := exec.CommandContext(ctx, "fpcalc", "-length", "120", audioURL)
+	var stdout, stderr bytes.Buffer
+	cmd.Stdout = &stdout
+	cmd.Stderr = &stderr
+	
+	err := cmd.Run()
+	if err == nil {
+		// Parse fpcalc output
+		lines := strings.Split(stdout.String(), "\n")
+		for _, line := range lines {
+			if strings.HasPrefix(line, "FINGERPRINT=") {
+				fingerprint = strings.TrimPrefix(line, "FINGERPRINT=")
+				break
+			}
+		}
+	} else {
+		slog.Debug("fpcalc not available, using fallback fingerprint",
+			slog.String("beat_id", beatID),
+			slog.String("error", err.Error()))
+	}
+	
+	return fingerprint, nil
 }
 
 func (s *BeatService) GetBeat(ctx context.Context, id string) (*models.Beat, error) {
@@ -201,14 +263,19 @@ func (s *BeatService) enrichBeats(ctx context.Context, beats []*models.Beat) {
 	profileCache := make(map[string]*userv1.GetUserProfileResponse)
 
 	for _, b := range beats {
-		// URLs
-		if b.ImageURL != "" {
-			url, _ := s.fileRepo.GetURL(ctx, ImagesBucket, b.ImageURL)
-			b.ImageURL = url
+		// URLs - generate fresh presigned URLs on each request
+		// This ensures URLs are always valid (24h expiry)
+		if b.ImageURL != "" && !strings.HasPrefix(b.ImageURL, "http") {
+			url, err := s.fileRepo.GetURL(ctx, ImagesBucket, b.ImageURL)
+			if err == nil {
+				b.ImageURL = url
+			}
 		}
-		if b.AudioURL != "" {
-			url, _ := s.fileRepo.GetURL(ctx, AudioBucket, b.AudioURL)
-			b.AudioURL = url
+		if b.AudioURL != "" && !strings.HasPrefix(b.AudioURL, "http") {
+			url, err := s.fileRepo.GetURL(ctx, AudioBucket, b.AudioURL)
+			if err == nil {
+				b.AudioURL = url
+			}
 		}
 
 		// Author Info

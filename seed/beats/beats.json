@@ -1,0 +1,56 @@
+[
+  {
+    "title": "Chill Lo-Fi Study Beat",
+    "tags": ["lofi", "chill", "study", "relax"],
+    "bpm": 80,
+    "price": 15.00,
+    "description": "Perfect beat for studying and relaxation",
+    "audio_url": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+    "image_url": "https://picsum.photos/seed/beat1/800/800.jpg"
+  },
+  {
+    "title": "Epic Trap Anthem",
+    "tags": ["trap", "hiphop", "rap", "hard"],
+    "bpm": 140,
+    "price": 25.00,
+    "description": "Hard hitting trap beat with heavy bass",
+    "audio_url": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
+    "image_url": "https://picsum.photos/seed/beat2/800/800.jpg"
+  },
+  {
+    "title": "Smooth R&B Groove",
+    "tags": ["rnb", "soul", "smooth", "vibes"],
+    "bpm": 95,
+    "price": 20.00,
+    "description": "Smooth R&B instrumental with soulful melodies",
+    "audio_url": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
+    "image_url": "https://picsum.photos/seed/beat3/800/800.jpg"
+  },
+  {
+    "title": "Energetic EDM Banger",
+    "tags": ["edm", "dance", "electronic", "party"],
+    "bpm": 128,
+    "price": 30.00,
+    "description": "High energy EDM track for festivals",
+    "audio_url": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3",
+    "image_url": "https://picsum.photos/seed/beat4/800/800.jpg"
+  },
+  {
+    "title": "Melodic Hip Hop Instrumental",
+    "tags": ["hiphop", "melodic", "emotional", "rap"],
+    "bpm": 90,
+    "price": 22.00,
+    "description": "Emotional melodic hip hop beat",
+    "audio_url": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3",
+    "image_url": "https://picsum.photos/seed/beat5/800/800.jpg"
+  },
+  {
+    "title": "Ambient Soundscape",
+    "tags": ["ambient", "atmospheric", "meditation", "calm"],
+    "bpm": 70,
+    "price": 18.00,
+    "description": "Peaceful ambient soundscape for meditation",
+    "audio_url": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-6.mp3",
+    "image_url": "https://picsum.photos/seed/beat6/800/800.jpg"
+  }
+]

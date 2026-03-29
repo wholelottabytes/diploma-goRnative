@@ -97,6 +97,7 @@ func main() {
 
 	// Call the seeder after services are initialized
 	seeder.SeedData(userService, repoAggregator.UserRepository)
+	seeder.SeedManagerAccount(userService, repoAggregator.UserRepository)
 
 	restHandler := rest.NewHandler(serviceAggregator)
 	ratingConsumer := transport_kafka.NewRatingUpdateConsumer(userService, ratingConsumerGroup, cfg.Kafka.RatingTopic)

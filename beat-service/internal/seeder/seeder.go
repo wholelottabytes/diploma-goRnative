@@ -22,7 +22,7 @@ func SeedData(beatService *beatservice.BeatService, beatRepo beatservice.BeatRep
 		sampleBeats := []models.Beat{
 			{
 				Title:       "Chill Vibes",
-				Genre:       "Lo-Fi",
+				Tags:        []string{"lofi", "chill", "study"},
 				BPM:         80,
 				Price:       15.00,
 				AuthorID:    userID,
@@ -31,11 +31,10 @@ func SeedData(beatService *beatservice.BeatService, beatRepo beatservice.BeatRep
 				AudioURL:    "https://example.com/audio/chill.mp3",
 				Rating:      4.5,
 				DownloadURL: "https://example.com/downloads/chill.zip",
-				Tags:        make([]string, 0),
 			},
 			{
 				Title:       "Epic Trap Anthem",
-				Genre:       "Trap",
+				Tags:        []string{"trap", "hiphop", "hard"},
 				BPM:         140,
 				Price:       25.00,
 				AuthorID:    userID,
@@ -44,11 +43,10 @@ func SeedData(beatService *beatservice.BeatService, beatRepo beatservice.BeatRep
 				AudioURL:    "https://example.com/audio/trap.mp3",
 				Rating:      4.8,
 				DownloadURL: "https://example.com/downloads/trap.zip",
-				Tags:        make([]string, 0),
 			},
 			{
 				Title:       "Smooth R&B Groove",
-				Genre:       "R&B",
+				Tags:        []string{"rnb", "soul", "smooth"},
 				BPM:         95,
 				Price:       20.00,
 				AuthorID:    userID,
@@ -57,7 +55,6 @@ func SeedData(beatService *beatservice.BeatService, beatRepo beatservice.BeatRep
 				AudioURL:    "https://example.com/audio/rnb.mp3",
 				Rating:      4.2,
 				DownloadURL: "https://example.com/downloads/rnb.zip",
-				Tags:        make([]string, 0),
 			},
 		}
 

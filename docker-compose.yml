@@ -300,7 +300,7 @@ services:
     environment:
       - ELASTICSEARCH_ADDR=http://elasticsearch:9200
       - MINIO_ENDPOINT=minio-storage:9000
-      - MINIO_PUBLIC_ENDPOINT=http://192.168.8.13:9010
+      - MINIO_PUBLIC_ENDPOINT=http://localhost:9010
       - MINIO_ACCESS_KEY_ID=minioadmin
       - MINIO_SECRET_ACCESS_KEY=minioadmin
       - MINIO_USE_SSL=false

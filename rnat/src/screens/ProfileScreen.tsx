@@ -16,7 +16,7 @@ import { AuthContext } from '../context/AuthContext';
 import { Colors, Typography, Spacing, BorderRadius } from '../theme/theme';
 import { userApi, walletApi } from '../api/services';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { LogOut, Music, Heart, Star, CreditCard } from 'react-native-feather';
+import { LogOut, Music, Heart, Star, CreditCard, Award, Shield } from 'react-native-feather';
 
 interface UserProfile {
   id: string;
@@ -41,6 +41,40 @@ export default function ProfileScreen({ navigation }: any) {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const authContext = useContext(AuthContext);
+  
+  // Check producer role from both profile and authContext
+  const isProducer = profile?.roles?.includes('producer') || authContext?.user?.roles?.includes('producer') || false;
+  const isManager = profile?.roles?.includes('manager') || authContext?.user?.roles?.includes('manager') || false;
+
+  const handleBecomeProducer = async () => {
+    Alert.alert(
+      'Become a Producer',
+      'Start selling your beats on BeatMarket! You can upload and manage your own beats.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Become Producer',
+          onPress: async () => {
+            try {
+              const updatedProfile = { ...profile, roles: [...(profile?.roles || []), 'producer'] };
+              setProfile(updatedProfile);
+              await AsyncStorage.setItem('user', JSON.stringify(updatedProfile));
+              await AsyncStorage.setItem('token', authContext?.user?.token || '');
+              
+              // Update auth context
+              if (authContext?.login) {
+                await authContext.login(authContext.user?.token || '', updatedProfile);
+              }
+              
+              Alert.alert('Success!', 'You are now a producer! 🎵');
+            } catch (error) {
+              Alert.alert('Error', 'Failed to become producer');
+            }
+          },
+        },
+      ]
+    );
+  };
 
   const loadProfile = async () => {
     try {
@@ -53,6 +87,10 @@ export default function ProfileScreen({ navigation }: any) {
       setBalance(walletRes.data.balance || 0);
 
       if (profileRes.data.name) {await AsyncStorage.setItem('userName', profileRes.data.name);}
+      
+      // Also update auth context with latest roles
+      const updatedUser = { ...authContext?.user, roles: profileRes.data.roles };
+      await AsyncStorage.setItem('user', JSON.stringify(updatedUser));
     } catch {
       // fail silently – user can see the logout button
     }
@@ -143,8 +181,49 @@ export default function ProfileScreen({ navigation }: any) {
           <View style={styles.statDivider} />
           <StatItem label="Rating" value={profile?.rating?.toFixed(1) ?? '—'} />
           <View style={styles.statDivider} />
-          <StatItem label="Role" value={isArtist ? 'Artist' : 'Listener'} />
+          <StatItem label="Role" value={isProducer ? 'Producer' : 'User'} />
         </View>
+
+        {/* Manager Dashboard */}
+        {isManager && (
+          <TouchableOpacity
+            onPress={() => navigation.navigate('Manager')}
+            style={styles.managerBtn}
+            activeOpacity={0.8}
+          >
+            <View style={styles.managerBtnContent}>
+              <Shield color={Colors.primary} width={24} height={24} />
+              <Text style={styles.managerBtnText}>Manager Dashboard</Text>
+            </View>
+            <Text style={styles.managerBtnSub}>Review reports & moderate</Text>
+          </TouchableOpacity>
+        )}
+
+        {/* Producer Stats */}
+        {isProducer && (
+          <View style={styles.producerStats}>
+            <View style={styles.producerStatsHeader}>
+              <Award color={Colors.primary} width={20} height={20} />
+              <Text style={styles.producerStatsTitle}>Producer Dashboard</Text>
+            </View>
+            <View style={styles.producerStatsGrid}>
+              <StatItem label="Total Beats" value="0" />
+              <StatItem label="Sales" value="0" />
+              <StatItem label="Earnings" value="$0" />
+            </View>
+          </View>
+        )}
+
+        {/* Become Producer Button */}
+        {!isProducer && (
+          <TouchableOpacity onPress={handleBecomeProducer} style={styles.becomeProducerBtn} activeOpacity={0.8}>
+            <View style={styles.becomeProducerContent}>
+              <Award color={Colors.primary} width={24} height={24} />
+              <Text style={styles.becomeProducerText}>Become a Producer</Text>
+            </View>
+            <Text style={styles.becomeProducerSub}>Start selling your beats</Text>
+          </TouchableOpacity>
+        )}
 
         {/* Menu */}
         <View style={styles.menu}>
@@ -271,7 +350,83 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(239,68,68,0.3)',
     paddingVertical: Spacing.base,
-    marginBottom: Spacing['4xl'],
+    marginBottom: Spacing['5xl'],
   },
   logoutText: { color: Colors.error, fontSize: Typography.base, fontWeight: Typography.medium },
+  producerStats: {
+    marginHorizontal: Spacing['2xl'],
+    backgroundColor: 'rgba(168,85,247,0.1)',
+    borderRadius: BorderRadius.xl,
+    borderWidth: 1,
+    borderColor: 'rgba(168,85,247,0.2)',
+    padding: Spacing.lg,
+    marginBottom: Spacing.xl,
+  },
+  producerStatsHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.sm,
+    marginBottom: Spacing.base,
+  },
+  producerStatsTitle: {
+    fontSize: Typography.base,
+    fontWeight: Typography.semibold,
+    color: Colors.primary,
+  },
+  producerStatsGrid: {
+    flexDirection: 'row',
+    gap: Spacing.base,
+  },
+  becomeProducerBtn: {
+    marginHorizontal: Spacing['2xl'],
+    backgroundColor: 'rgba(168,85,247,0.15)',
+    borderRadius: BorderRadius.xl,
+    borderWidth: 1,
+    borderColor: 'rgba(168,85,247,0.3)',
+    padding: Spacing.lg,
+    marginBottom: Spacing.xl,
+  },
+  becomeProducerContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.sm,
+    justifyContent: 'center',
+  },
+  becomeProducerText: {
+    fontSize: Typography.base,
+    fontWeight: Typography.semibold,
+    color: Colors.primary,
+  },
+  becomeProducerSub: {
+    fontSize: Typography.sm,
+    color: Colors.textSecondary,
+    textAlign: 'center',
+    marginTop: Spacing.xs,
+  },
+  managerBtn: {
+    marginHorizontal: Spacing['2xl'],
+    backgroundColor: 'rgba(16,185,129,0.15)',
+    borderRadius: BorderRadius.xl,
+    borderWidth: 1,
+    borderColor: 'rgba(16,185,129,0.3)',
+    padding: Spacing.lg,
+    marginBottom: Spacing.xl,
+  },
+  managerBtnContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.sm,
+    justifyContent: 'center',
+  },
+  managerBtnText: {
+    fontSize: Typography.base,
+    fontWeight: Typography.semibold,
+    color: '#10B981',
+  },
+  managerBtnSub: {
+    fontSize: Typography.sm,
+    color: Colors.textSecondary,
+    textAlign: 'center',
+    marginTop: Spacing.xs,
+  },
 });

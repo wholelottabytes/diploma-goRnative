@@ -135,7 +135,7 @@ const BeatDetailsScreen = ({ route, navigation }: BeatDetailsScreenProps) => {
   const handleRate = async (value: number) => {
     try {
       setRating(value);
-      await interactionApi.rateBeat(beat.id, value);
+      await interactionApi.rateBeat(beat._id, value);
       fetchRatings();
       Alert.alert('Thank you!', 'Rating submitted');
     } catch (error: any) {
@@ -145,7 +145,7 @@ const BeatDetailsScreen = ({ route, navigation }: BeatDetailsScreenProps) => {
 
   const handleBuy = async () => {
     try {
-      await orderApi.buyBeat(beat.id);
+      await orderApi.buyBeat(beat._id);
       Alert.alert('Success', 'Purchase completed!');
     } catch (error: any) {
       Alert.alert('Error', error.response?.data?.error || 'Purchase failed');
@@ -210,11 +210,11 @@ const BeatDetailsScreen = ({ route, navigation }: BeatDetailsScreenProps) => {
 
   const handleAddComment = async () => {
     try {
-      await interactionApi.addComment(beat.id, commentText);
+      await interactionApi.addComment(beat._id, commentText);
       setCommentText('');
       fetchComments();
-    } catch (error) {
-      Alert.alert('Error', 'Failed to add comment');
+    } catch (error: any) {
+      Alert.alert('Error', error.response?.data?.error || 'Failed to add comment');
     }
   };
 

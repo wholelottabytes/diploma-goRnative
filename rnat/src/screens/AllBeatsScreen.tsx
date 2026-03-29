@@ -9,17 +9,24 @@ import { beatApi } from '../api/services';
 import { Search } from 'react-native-feather';
 
 interface Beat {
-  id: string; title: string; genre: string; bpm: number;
-  price: number; artistName: string; coverUrl?: string; rating?: number;
+  _id: string;
+  title: string;
+  tags: string[];
+  bpm: number;
+  price: number;
+  description: string;
+  author_name: string;
+  author_id: string;
+  image_url?: string;
+  audio_url?: string;
+  rating?: number;
 }
-
-const GENRES = ['All', 'Hip-Hop', 'Trap', 'R&B', 'Pop', 'Electronic'];
 
 const BeatRow = ({ beat, onPress }: { beat: Beat; onPress: () => void }) => (
   <TouchableOpacity onPress={onPress} activeOpacity={0.8} style={styles.row}>
     <View style={styles.rowCover}>
-      {beat.coverUrl ? (
-        <Image source={{ uri: beat.coverUrl }} style={styles.coverImg} />
+      {beat.image_url ? (
+        <Image source={{ uri: beat.image_url }} style={styles.coverImg} />
       ) : (
         <LinearGradient colors={['#A855F7', '#06B6D4']} style={styles.coverImg}>
           <Text style={{ fontSize: 20 }}>🎵</Text>
@@ -28,18 +35,18 @@ const BeatRow = ({ beat, onPress }: { beat: Beat; onPress: () => void }) => (
     </View>
     <View style={styles.rowInfo}>
       <Text style={styles.rowTitle} numberOfLines={1}>{beat.title}</Text>
-      <Text style={styles.rowArtist}>{beat.artistName}</Text>
+      <Text style={styles.rowArtist}>{beat.author_name || 'Unknown'}</Text>
       <View style={styles.rowMeta}>
-        {/* Текст внутри View обязательно в компоненте Text */}
-        <View style={styles.metaChipContainer}>
-          <Text style={styles.metaChip}>{beat.genre}</Text>
-        </View>
+        {beat.tags && beat.tags.length > 0 && (
+          <View style={styles.metaChipContainer}>
+            <Text style={styles.metaChip}>{beat.tags[0]}</Text>
+          </View>
+        )}
         <Text style={styles.metaBpm}>{beat.bpm} BPM</Text>
       </View>
     </View>
     <View style={styles.rowRight}>
       <Text style={styles.rowPrice}>${beat.price}</Text>
-      {/* Использование !! гарантирует получение boolean, а не числа 0 */}
       {!!beat.rating && (
         <Text style={styles.rowRating}>⭐ {beat.rating.toFixed(1)}</Text>
       )}
@@ -53,76 +60,77 @@ export default function AllBeatsScreen({ navigation }: any) {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [search, setSearch] = useState('');
-  const [genre, setGenre] = useState('All');
 
   const load = async () => {
     try {
       const res = await beatApi.getAll();
-      setBeats(res.data ?? []);
-    } catch { 
-      setBeats([]); 
+      const beatsData = res.data ?? [];
+      // Map backend fields to frontend interface
+      const mappedBeats: Beat[] = beatsData.map((b: any) => ({
+        _id: b._id || b.id,
+        title: b.title,
+        tags: b.tags || [],
+        bpm: b.bpm,
+        price: b.price,
+        description: b.description || '',
+        author_name: b.author_name || b.authorName || 'Unknown',
+        author_id: b.author_id || b.authorId,
+        image_url: b.image_url || b.imageUrl,
+        audio_url: b.audio_url || b.audioUrl,
+        rating: b.rating,
+      }));
+      setBeats(mappedBeats);
+    } catch (error) {
+      console.error('Failed to load beats:', error);
+      setBeats([]);
     }
   };
 
   useEffect(() => {
     let result = beats;
-    if (genre !== 'All') {
-      result = result.filter(b => b.genre === genre);
-    }
     if (search.trim()) {
+      const query = search.toLowerCase();
       result = result.filter(b =>
-        b.title.toLowerCase().includes(search.toLowerCase()) ||
-        b.artistName.toLowerCase().includes(search.toLowerCase())
+        b.title.toLowerCase().includes(query) ||
+        b.author_name.toLowerCase().includes(query) ||
+        (b.description && b.description.toLowerCase().includes(query)) ||
+        (b.tags && b.tags.some(tag => tag.toLowerCase().includes(query)))
       );
     }
     setFiltered(result);
-  }, [beats, genre, search]);
+  }, [beats, search]);
 
   useEffect(() => {
-    (async () => { 
-      setLoading(true); 
-      await load(); 
-      setLoading(false); 
+    (async () => {
+      setLoading(true);
+      await load();
+      setLoading(false);
     })();
   }, []);
 
-  const onRefresh = async () => { 
-    setRefreshing(true); 
-    await load(); 
-    setRefreshing(false); 
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await load();
+    setRefreshing(false);
   };
 
   return (
     <View style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor="#0A0A0F" />
-      
+
       <LinearGradient colors={['rgba(168,85,247,0.15)','transparent']} style={styles.topBar}>
         <Text style={styles.screenTitle}>Explore</Text>
         <View style={styles.searchBar}>
           <Search color={Colors.textMuted} width={16} height={16} />
           <TextInput
             style={styles.searchInput}
-            placeholder="Search beats..."
+            placeholder="Search by title, tags, description..."
             placeholderTextColor={Colors.textMuted}
             value={search}
             onChangeText={setSearch}
             selectionColor={Colors.primary}
           />
         </View>
-        <FlatList
-          horizontal
-          data={GENRES}
-          keyExtractor={g => g}
-          showsHorizontalScrollIndicator={false}
-          renderItem={({ item }) => (
-            <TouchableOpacity
-              onPress={() => setGenre(item)}
-              style={[styles.genreChip, genre === item && styles.genreChipActive]}>
-              <Text style={[styles.genreText, genre === item && styles.genreTextActive]}>{item}</Text>
-            </TouchableOpacity>
-          )}
-          contentContainerStyle={{ gap: Spacing.xs }}
-        />
       </LinearGradient>
 
       {loading ? (
@@ -132,21 +140,21 @@ export default function AllBeatsScreen({ navigation }: any) {
       ) : (
         <FlatList
           data={filtered}
-          keyExtractor={item => item.id}
+          keyExtractor={item => item._id}
           renderItem={({ item }) => (
-            <BeatRow beat={item} onPress={() => navigation.navigate('BeatDetails', { beatId: item.id })} />
+            <BeatRow beat={item} onPress={() => navigation.navigate('BeatDetails', { beat: item })} />
           )}
           ListEmptyComponent={
             <View style={styles.empty}>
               <Text style={styles.emptyText}>No beats found</Text>
-              <Text style={styles.emptySub}>Try a different search or genre</Text>
+              <Text style={styles.emptySub}>Try a different search term</Text>
             </View>
           }
           refreshControl={
-            <RefreshControl 
-              refreshing={refreshing} 
-              onRefresh={onRefresh} 
-              tintColor={Colors.primary} 
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              tintColor={Colors.primary}
             />
           }
           contentContainerStyle={styles.list}
@@ -166,17 +174,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row', alignItems: 'center', gap: Spacing.sm,
     backgroundColor: 'rgba(255,255,255,0.06)',
     borderRadius: BorderRadius.xl, borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)',
-    paddingHorizontal: Spacing.base, marginBottom: Spacing.sm,
+    paddingHorizontal: Spacing.base,
   },
   searchInput: { flex: 1, color: Colors.textPrimary, fontSize: Typography.base, paddingVertical: Spacing.sm },
-  genreChip: {
-    paddingHorizontal: Spacing.base, paddingVertical: Spacing.xs,
-    borderRadius: BorderRadius.full, backgroundColor: 'rgba(255,255,255,0.06)',
-    borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)',
-  },
-  genreChipActive: { backgroundColor: 'rgba(168,85,247,0.2)', borderColor: Colors.primary },
-  genreText: { fontSize: Typography.sm, color: Colors.textSecondary, fontWeight: Typography.medium },
-  genreTextActive: { color: Colors.primary },
   list: { paddingHorizontal: Spacing['2xl'], paddingBottom: Spacing['3xl'], paddingTop: Spacing.sm },
   row: {
     flexDirection: 'row', alignItems: 'center',

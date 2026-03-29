@@ -2,11 +2,10 @@ package minio
 
 import (
 	"context"
+	"fmt"
 	"io"
 	"log/slog"
-	"net/url"
 	"strings"
-	"time"
 
 	"github.com/bns/beat-service/configs"
 	"github.com/minio/minio-go/v7"
@@ -35,6 +34,15 @@ func (r *FileRepository) Upload(ctx context.Context, bucketName, objectName stri
 		if err != nil {
 			return "", err
 		}
+		
+		// Set bucket policy to public read
+		policy := fmt.Sprintf(`{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Principal":{"AWS":["*"]},"Action":["s3:GetObject"],"Resource":["arn:aws:s3:::%s/*"]}]}`, bucketName)
+		err = r.client.SetBucketPolicy(ctx, bucketName, policy)
+		if err != nil {
+			slog.Warn("failed to set bucket policy", "bucket", bucketName, "error", err)
+		} else {
+			slog.Info("bucket policy set to public", "bucket", bucketName)
+		}
 	}
 
 	_, err = r.client.PutObject(ctx, bucketName, objectName, reader, objectSize, minio.PutObjectOptions{})
@@ -49,20 +57,14 @@ func (r *FileRepository) Delete(ctx context.Context, bucketName, objectName stri
 }
 
 func (r *FileRepository) GetURL(ctx context.Context, bucketName, objectName string) (string, error) {
-	reqParams := make(url.Values)
-	presignedURL, err := r.client.PresignedGetObject(ctx, bucketName, objectName, time.Hour*24, reqParams)
-	if err != nil {
-		return "", err
+	// For public buckets, return direct URL without presigned parameters
+	// This URL never expires and can be accessed by anyone
+	publicEndpoint := strings.TrimSuffix(r.cfg.MinIO.PublicEndpoint, "/")
+	if publicEndpoint == "" {
+		publicEndpoint = "http://" + strings.TrimSuffix(r.cfg.MinIO.Endpoint, "/")
 	}
 	
-    slog.Info("Generated presigned URL", "url", presignedURL.String())
-
-	internalEndpoint := "http://" + r.cfg.MinIO.Endpoint
-    if r.cfg.MinIO.PublicEndpoint != "" {
-        finalUrl := strings.Replace(presignedURL.String(), internalEndpoint, r.cfg.MinIO.PublicEndpoint, 1)
-        slog.Info("Replaced URL", "url", finalUrl)
-        return finalUrl, nil
-    }
-
-	return presignedURL.String(), nil
+	// Construct direct URL to object
+	directURL := fmt.Sprintf("%s/%s/%s", publicEndpoint, bucketName, objectName)
+	return directURL, nil
 }
