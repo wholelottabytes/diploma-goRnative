@@ -14,9 +14,9 @@ import {
 import LinearGradient from 'react-native-linear-gradient';
 import { AuthContext } from '../context/AuthContext';
 import { Colors, Typography, Spacing, BorderRadius } from '../theme/theme';
-import { userApi, walletApi } from '../api/services';
+import { userApi, walletApi, beatApi, interactionApi } from '../api/services';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { LogOut, Music, Heart, Star, CreditCard, Award, Shield } from 'react-native-feather';
+import { LogOut, Music, Heart, Star, CreditCard, Award, Shield, ShoppingBag } from 'react-native-feather';
 
 interface UserProfile {
   id: string;
@@ -83,16 +83,81 @@ export default function ProfileScreen({ navigation }: any) {
         walletApi.getBalance(),
       ]);
 
-      setProfile(profileRes.data);
+      const profileData = profileRes.data;
+      
+      // Get user ID from auth context (user API doesn't return _id)
+      const userId = authContext?.user?._id;
+      console.log('Loading profile for user ID:', userId);
+      
+      // Calculate REAL stats from interaction-service
+      let realRating = 0;
+      let totalBeats = 0;
+      let totalSales = 0;
+      let totalEarnings = 0;
+      
+      try {
+        const allBeatsRes = await beatApi.getAll();
+        const allBeats = allBeatsRes?.data ?? [];
+        const userBeats = allBeats.filter((b: any) => b.author_id === userId);
+        
+        totalBeats = userBeats.length;
+        console.log('User beats found:', totalBeats);
+        
+        let totalRatingSum = 0;
+        let ratedBeatsCount = 0;
+        
+        for (const beat of userBeats) {
+          try {
+            const ratingRes = await interactionApi.getRating(beat._id);
+            if (ratingRes?.data?.average && ratingRes.data.average > 0) {
+              totalRatingSum += ratingRes.data.average;
+              ratedBeatsCount++;
+              console.log(`Beat "${beat.title}" rating:`, ratingRes.data.average);
+            }
+          } catch {
+            // Beat has no ratings
+          }
+        }
+        
+        realRating = ratedBeatsCount > 0 ? totalRatingSum / ratedBeatsCount : 0;
+        console.log('Profile REAL Average rating:', realRating, 'from', ratedBeatsCount, 'beats');
+        
+        // Try to get sales data from order-service
+        try {
+          const ordersRes = await orderApi.getOrders();
+          const orders = ordersRes?.data ?? [];
+          const sellerOrders = orders.filter((o: any) => o.sellerId === userId || o.seller_id === userId);
+          totalSales = sellerOrders.length;
+          totalEarnings = sellerOrders.reduce((sum: number, o: any) => sum + (o.price || 0), 0);
+          console.log('Sales:', totalSales, 'Earnings:', totalEarnings);
+        } catch (orderError) {
+          console.warn('Failed to load orders:', orderError);
+          // Fallback: estimate from beats
+          totalSales = 0;
+          totalEarnings = 0;
+        }
+      } catch (error) {
+        console.warn('Failed to calculate stats:', error);
+      }
+      
+      // Update profile with real stats
+      const updatedProfile = { 
+        ...profileData, 
+        rating: realRating,
+        totalBeats,
+        totalSales,
+        totalEarnings,
+      };
+      setProfile(updatedProfile);
       setBalance(walletRes.data.balance || 0);
 
-      if (profileRes.data.name) {await AsyncStorage.setItem('userName', profileRes.data.name);}
-      
+      if (profileData.name) {await AsyncStorage.setItem('userName', profileData.name);}
+
       // Also update auth context with latest roles
-      const updatedUser = { ...authContext?.user, roles: profileRes.data.roles };
+      const updatedUser = { ...authContext?.user, roles: profileData.roles };
       await AsyncStorage.setItem('user', JSON.stringify(updatedUser));
-    } catch {
-      // fail silently – user can see the logout button
+    } catch (error) {
+      console.error('Failed to load profile:', error);
     }
   };
 
@@ -207,9 +272,9 @@ export default function ProfileScreen({ navigation }: any) {
               <Text style={styles.producerStatsTitle}>Producer Dashboard</Text>
             </View>
             <View style={styles.producerStatsGrid}>
-              <StatItem label="Total Beats" value="0" />
-              <StatItem label="Sales" value="0" />
-              <StatItem label="Earnings" value="$0" />
+              <StatItem label="Total Beats" value={(profile as any)?.totalBeats || 0} />
+              <StatItem label="Sales" value={(profile as any)?.totalSales || 0} />
+              <StatItem label="Earnings" value={`$${((profile as any)?.totalEarnings || 0).toFixed(0)}`} />
             </View>
           </View>
         )}
@@ -229,6 +294,7 @@ export default function ProfileScreen({ navigation }: any) {
         <View style={styles.menu}>
                     {[
             { icon: CreditCard, label: 'Top Up Wallet', onPress: () => navigation.navigate('TopUp') },
+            { icon: ShoppingBag, label: 'My Purchases', onPress: () => navigation.navigate('MyPurchases') },
             { icon: Music, label: 'My Beats', onPress: () => navigation.navigate('Add') },
             { icon: Heart, label: 'Liked Beats', onPress: () => navigation.navigate('Rated') },
             { icon: Star, label: 'Beat Market', onPress: () => navigation.navigate('Explore') },

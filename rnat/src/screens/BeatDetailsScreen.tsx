@@ -94,34 +94,44 @@ const BeatDetailsScreen = ({ route, navigation }: BeatDetailsScreenProps) => {
   }, []);
 
   const fetchRatings = useCallback(async () => {
-    if (!beat?.id) return;
-    
+    if (!beat?._id) return;
+
     try {
-      const response = await interactionApi.getRating(beat.id);
+      const response = await interactionApi.getRating(beat._id);
       setAverageRating(response.data.average);
 
-      const userRatingRes = await interactionApi.getUserRating(beat.id);
-      setRating(userRatingRes.data.value);
+      try {
+        const userRatingRes = await interactionApi.getUserRating(beat._id);
+        if (userRatingRes.data && userRatingRes.data.value) {
+          setRating(userRatingRes.data.value);
+        }
+      } catch (userRatingError) {
+        // User hasn't rated yet or error fetching user rating
+        console.log('No user rating found:', userRatingError);
+        setRating(0);
+      }
     } catch (error) {
       console.error('Error fetching ratings:', error);
     }
-  }, [beat.id]);
+  }, [beat._id]);
 
   const fetchComments = useCallback(async () => {
-    if (!beat?.id) return;
-    
+    if (!beat?._id) return;
+
     setIsLoadingComments(true);
     try {
-      const response = await interactionApi.getComments(beat.id);
-      setComments(response.data);
-      setTotalComments(response.data.length);
+      const response = await interactionApi.getComments(beat._id);
+      const commentsData = response?.data ?? [];
+      setComments(Array.isArray(commentsData) ? commentsData : []);
+      setTotalComments(Array.isArray(commentsData) ? commentsData.length : 0);
       setTotalCommentsPages(1); // Backend currently returns simple list
     } catch (error) {
       console.error('Error fetching comments:', error);
+      setComments([]); // Ensure comments is always an array
     } finally {
       setIsLoadingComments(false);
     }
-  }, [beat.id]);
+  }, [beat._id]);
 
   useEffect(() => {
     fetchUserData();
@@ -342,7 +352,10 @@ const BeatDetailsScreen = ({ route, navigation }: BeatDetailsScreenProps) => {
           <Text style={styles.title}>{beat.title}</Text>
 
           <TouchableOpacity
-            onPress={() => navigation.navigate('UserProfile', { username: beat.author_name })}
+            onPress={() => navigation.navigate('UserProfile', { 
+              userId: beat.author_id, 
+              userName: beat.author_name 
+            })}
           >
             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, marginBottom: 20 }}>
               {beat.author_avatar && <Image source={{ uri: beat.author_avatar }} style={{ width: 24, height: 24, borderRadius: 12 }} />}
@@ -451,7 +464,7 @@ const BeatDetailsScreen = ({ route, navigation }: BeatDetailsScreenProps) => {
               <ActivityIndicator size="large" color="#fff" />
             ) : (
               <>
-                {comments.map(comment => (
+                {(comments || []).map(comment => (
                   <View key={comment.id} style={styles.commentContainer}>
                     <View style={styles.commentHeader}>
                       <Text style={styles.commentAuthor}>{comment.username}</Text>

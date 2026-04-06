@@ -54,15 +54,17 @@ const BeatRow = ({ beat, onPress }: { beat: Beat; onPress: () => void }) => (
   </TouchableOpacity>
 );
 
-export default function AllBeatsScreen({ navigation }: any) {
+export default function AllBeatsScreen({ navigation, route }: any) {
   const [beats, setBeats] = useState<Beat[]>([]);
   const [filtered, setFiltered] = useState<Beat[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [search, setSearch] = useState('');
+  const [error, setError] = useState<string | null>(null);
 
   const load = async () => {
     try {
+      setError(null);
       const res = await beatApi.getAll();
       const beatsData = res.data ?? [];
       // Map backend fields to frontend interface
@@ -80,9 +82,12 @@ export default function AllBeatsScreen({ navigation }: any) {
         rating: b.rating,
       }));
       setBeats(mappedBeats);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to load beats:', error);
+      setError(error.message || 'Failed to load beats');
       setBeats([]);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -101,11 +106,7 @@ export default function AllBeatsScreen({ navigation }: any) {
   }, [beats, search]);
 
   useEffect(() => {
-    (async () => {
-      setLoading(true);
-      await load();
-      setLoading(false);
-    })();
+    load();
   }, []);
 
   const onRefresh = async () => {
@@ -113,6 +114,20 @@ export default function AllBeatsScreen({ navigation }: any) {
     await load();
     setRefreshing(false);
   };
+
+  if (error && !loading) {
+    return (
+      <View style={styles.container}>
+        <StatusBar barStyle="light-content" backgroundColor="#0A0A0F" />
+        <View style={styles.centered}>
+          <Text style={styles.errorText}>⚠️ {error}</Text>
+          <TouchableOpacity onPress={load} style={styles.retryBtn}>
+            <Text style={styles.retryText}>Retry</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
@@ -202,4 +217,7 @@ const styles = StyleSheet.create({
   empty: { alignItems: 'center', paddingTop: Spacing['4xl'] },
   emptyText: { color: Colors.textSecondary, fontSize: Typography.md, fontWeight: Typography.medium },
   emptySub: { color: Colors.textMuted, fontSize: Typography.sm, marginTop: Spacing.xs },
+  errorText: { color: Colors.error, fontSize: Typography.md, fontWeight: Typography.medium, marginBottom: Spacing.lg },
+  retryBtn: { backgroundColor: Colors.primary, paddingHorizontal: Spacing['2xl'], paddingVertical: Spacing.base, borderRadius: BorderRadius.lg },
+  retryText: { color: '#fff', fontSize: Typography.base, fontWeight: Typography.semibold },
 });

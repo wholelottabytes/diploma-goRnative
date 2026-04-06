@@ -18,6 +18,7 @@ import { BottomTabNavigationOptions } from '@react-navigation/bottom-tabs';
 import UserProfileScreen from './screens/UserProfileScreen';
 import TopUpScreen from './screens/TopUpScreen';
 import ManagerScreen from './screens/ManagerScreen';
+import MyPurchasesScreen from './screens/MyPurchasesScreen';
 import LoadingScreen from './screens/LoadingScreen';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { RouteProp, ParamListBase } from '@react-navigation/native';
@@ -127,6 +128,7 @@ const AppContent = () => {
           <Stack.Screen name="UserProfile" component={UserProfileScreen as React.ComponentType<any>} />
           <Stack.Screen name="TopUp" component={TopUpScreen as React.ComponentType<any>} />
           <Stack.Screen name="Manager" component={ManagerScreen} />
+          <Stack.Screen name="MyPurchases" component={MyPurchasesScreen} />
         </Stack.Navigator>
       </NavigationContainer>
     </GestureHandlerRootView>

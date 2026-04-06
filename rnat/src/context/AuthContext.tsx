@@ -80,12 +80,27 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             const payload = parseJwt(token);
 
             if (payload && payload.exp) {
-                const currentTime = Math.floor(Date.now() / 1000); // текущее время в секундах
+                const currentTime = Math.floor(Date.now() / 1000);
                 if (payload.exp > currentTime) {
                     setIsAuthenticated(true);
                     const parsedUser: User = JSON.parse(storedUser);
                     setUser(parsedUser);
-                    setAuthHeader(token); // Set header on startup
+                    setAuthHeader(token);
+                    
+                    // Always fetch fresh profile on startup to get updated roles
+                    try {
+                        const profileRes = await userApi.getProfile();
+                        const fullProfileData: User = profileRes.data;
+                        const updatedUser = {
+                            ...parsedUser,
+                            ...fullProfileData,
+                            token: parsedUser.token,
+                        };
+                        setUser(updatedUser);
+                        await AsyncStorage.setItem('user', JSON.stringify(updatedUser));
+                    } catch (error) {
+                        console.warn('Failed to refresh profile on startup:', error);
+                    }
                     return;
                 }
             }

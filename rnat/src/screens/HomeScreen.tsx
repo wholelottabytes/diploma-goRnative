@@ -30,50 +30,91 @@ interface Beat {
   rating?: number;
 }
 
-const BeatCard = ({ beat, onPress }: { beat: Beat; onPress: () => void }) => (
-  <TouchableOpacity onPress={onPress} activeOpacity={0.85} style={styles.cardWrap}>
-    <View style={styles.card}>
-      <View style={styles.coverContainer}>
-        {beat.image_url ? (
-          <Image source={{ uri: beat.image_url }} style={styles.cover} />
-        ) : (
-          <View style={styles.coverPlaceholder}>
-            <Text style={styles.coverEmoji}>🎵</Text>
+const BeatCard = ({ beat, onPress, variant = 'default' }: { beat: Beat; onPress: () => void; variant?: 'default' | 'compact' }) => {
+  if (variant === 'compact') {
+    return (
+      <TouchableOpacity onPress={onPress} activeOpacity={0.85} style={styles.compactCardWrap}>
+        <View style={styles.compactCard}>
+          <View style={styles.compactCover}>
+            {beat.image_url ? (
+              <Image source={{ uri: beat.image_url }} style={styles.compactCoverImg} />
+            ) : (
+              <View style={styles.compactCoverPlaceholder}>
+                <Text style={styles.coverEmoji}>🎵</Text>
+              </View>
+            )}
           </View>
-        )}
-      </View>
-      <View style={styles.cardInfo}>
-        <Text style={styles.beatTitle} numberOfLines={1}>{beat.title}</Text>
-        <View style={styles.artistRow}>
-          {!!beat.author_avatar && (
-            <Image source={{ uri: beat.author_avatar }} style={styles.authorMiniAvatar} />
-          )}
-          <Text style={styles.beatArtist} numberOfLines={1}>
-            {beat.author_name || 'Unknown'}
-          </Text>
-        </View>
-        <View style={styles.beatMeta}>
-          {beat.tags && beat.tags.length > 0 ? (
-            <View style={styles.tag}>
-              <Text style={styles.tagText}>{beat.tags[0]}</Text>
+          <View style={styles.compactInfo}>
+            <Text style={styles.compactTitle} numberOfLines={1}>{beat.title}</Text>
+            <View style={styles.compactMeta}>
+              {beat.tags && beat.tags.length > 0 ? (
+                <View style={styles.tag}>
+                  <Text style={styles.tagText}>{beat.tags[0]}</Text>
+                </View>
+              ) : (
+                <View style={styles.tag}>
+                  <Text style={styles.tagText}>No tags</Text>
+                </View>
+              )}
+              <Text style={styles.bpm}>{beat.bpm} BPM</Text>
             </View>
+            <View style={styles.compactBottom}>
+              <Text style={styles.price}>${beat.price}</Text>
+              {!!beat.rating && (
+                <Text style={styles.rating}>⭐ {beat.rating.toFixed(1)}</Text>
+              )}
+            </View>
+          </View>
+        </View>
+      </TouchableOpacity>
+    );
+  }
+
+  return (
+    <TouchableOpacity onPress={onPress} activeOpacity={0.85} style={styles.cardWrap}>
+      <View style={styles.card}>
+        <View style={styles.coverContainer}>
+          {beat.image_url ? (
+            <Image source={{ uri: beat.image_url }} style={styles.cover} />
           ) : (
-            <View style={styles.tag}>
-              <Text style={styles.tagText}>No tags</Text>
+            <View style={styles.coverPlaceholder}>
+              <Text style={styles.coverEmoji}>🎵</Text>
             </View>
           )}
-          <Text style={styles.bpm}>{beat.bpm?.toString() || '—'} BPM</Text>
         </View>
-        <View style={styles.priceRow}>
-          <Text style={styles.price}>${beat.price}</Text>
-          {!!beat.rating && (
-            <Text style={styles.rating}>⭐ {beat.rating.toFixed(1)}</Text>
-          )}
+        <View style={styles.cardInfo}>
+          <Text style={styles.beatTitle} numberOfLines={1}>{beat.title}</Text>
+          <View style={styles.artistRow}>
+            {!!beat.author_avatar && (
+              <Image source={{ uri: beat.author_avatar }} style={styles.authorMiniAvatar} />
+            )}
+            <Text style={styles.beatArtist} numberOfLines={1}>
+              {beat.author_name || 'Unknown'}
+            </Text>
+          </View>
+          <View style={styles.beatMeta}>
+            {beat.tags && beat.tags.length > 0 ? (
+              <View style={styles.tag}>
+                <Text style={styles.tagText}>{beat.tags[0]}</Text>
+              </View>
+            ) : (
+              <View style={styles.tag}>
+                <Text style={styles.tagText}>No tags</Text>
+              </View>
+            )}
+            <Text style={styles.bpm}>{beat.bpm?.toString() || '—'} BPM</Text>
+          </View>
+          <View style={styles.priceRow}>
+            <Text style={styles.price}>${beat.price}</Text>
+            {!!beat.rating && (
+              <Text style={styles.rating}>⭐ {beat.rating.toFixed(1)}</Text>
+            )}
+          </View>
         </View>
       </View>
-    </View>
-  </TouchableOpacity>
-);
+    </TouchableOpacity>
+  );
+};
 
 export default function HomeScreen({ navigation }: any) {
   const [trending, setTrending] = useState<Beat[]>([]);
@@ -107,11 +148,16 @@ export default function HomeScreen({ navigation }: any) {
   useEffect(() => {
     const init = async () => {
       setLoading(true);
-      if (authContext?.user?.username) {
-        setUserName(authContext.user.username);
+      try {
+        if (authContext?.user?.username) {
+          setUserName(authContext.user.username);
+        }
+        await loadBeats();
+      } catch (error) {
+        console.warn('HomeScreen init error:', error);
+      } finally {
+        setLoading(false);
       }
-      await loadBeats();
-      setLoading(false);
     };
     init();
   }, [authContext?.user]);
@@ -144,7 +190,7 @@ export default function HomeScreen({ navigation }: any) {
               </View>
             </View>
 
-            {/* Trending */}
+            {/* Trending - Horizontal Scroll */}
             <Text style={styles.sectionTitle}>🔥 Trending</Text>
             <FlatList
               horizontal
@@ -155,26 +201,21 @@ export default function HomeScreen({ navigation }: any) {
               renderItem={({ item }) => (
                 <BeatCard
                   beat={item}
+                  variant="compact"
                   onPress={() => navigation.navigate('BeatDetails', { beat: item })}
                 />
               )}
             />
 
-            {/* Latest */}
+            {/* Latest Drops - Full Width Vertical */}
             <Text style={styles.sectionTitle}>🆕 Latest Drops</Text>
-            <FlatList
-              data={latest}
-              keyExtractor={item => item._id}
-              scrollEnabled={false}
-              contentContainerStyle={styles.latestList}
-              renderItem={({ item }) => (
-                <BeatCard
-                  key={item._id}
-                  beat={item}
-                  onPress={() => navigation.navigate('BeatDetails', { beat: item })}
-                />
-              )}
-            />
+            {latest.map(beat => (
+              <BeatCard
+                key={beat._id}
+                beat={beat}
+                onPress={() => navigation.navigate('BeatDetails', { beat: beat })}
+              />
+            ))}
           </View>
         }
         refreshControl={
@@ -199,7 +240,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: Spacing['2xl'],
+    paddingHorizontal: Spacing.base,
     marginBottom: Spacing.xl,
   },
   greeting: {
@@ -216,24 +257,31 @@ const styles = StyleSheet.create({
     fontSize: Typography.md,
     fontWeight: Typography.bold,
     color: Colors.textPrimary,
-    marginHorizontal: Spacing['2xl'],
+    paddingHorizontal: Spacing.base,
     marginBottom: Spacing.base,
     marginTop: Spacing.xl,
   },
   trendingList: {
-    paddingHorizontal: Spacing['2xl'],
-    gap: Spacing.base,
+    paddingLeft: Spacing.base,
+    paddingRight: 0,
+    gap: Spacing.xs,
     marginBottom: Spacing.lg,
   },
   latestList: {
     gap: Spacing.sm,
     paddingBottom: Spacing['3xl'],
   },
-  list: { 
-    paddingHorizontal: Spacing['2xl'],
+  list: {
     paddingBottom: Spacing['4xl'],
   },
-  cardWrap: { marginBottom: Spacing.sm },
+  cardWrap: { 
+    marginBottom: Spacing.sm,
+    paddingHorizontal: Spacing.base,
+  },
+  compactCardWrap: {
+    marginBottom: 0,
+    paddingHorizontal: 0,
+  },
   card: {
     backgroundColor: 'rgba(255,255,255,0.05)',
     borderRadius: BorderRadius.xl,
@@ -256,6 +304,45 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: Spacing.md,
     justifyContent: 'space-between',
+  },
+  // Compact card styles (for Trending)
+  compactCard: {
+    width: 150,
+    backgroundColor: 'rgba(255,255,255,0.05)',
+    borderRadius: BorderRadius.lg,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.08)',
+    overflow: 'hidden',
+    marginRight: Spacing.xs,
+  },
+  compactCover: { width: 150, height: 150 },
+  compactCoverImg: { width: 150, height: 150 },
+  compactCoverPlaceholder: {
+    width: 150,
+    height: 150,
+    backgroundColor: 'rgba(168,85,247,0.2)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  compactInfo: {
+    padding: Spacing.sm,
+  },
+  compactTitle: {
+    fontSize: Typography.sm,
+    fontWeight: Typography.semibold,
+    color: Colors.textPrimary,
+    marginBottom: 4,
+  },
+  compactMeta: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.xs,
+    marginBottom: 4,
+  },
+  compactBottom: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   beatTitle: {
     fontSize: Typography.base,
